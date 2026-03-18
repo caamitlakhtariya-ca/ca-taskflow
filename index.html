@@ -512,7 +512,7 @@ function ok(d){return ContentService.createTextOutput(JSON.stringify({ok:true,da
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
-let CFG  = JSON.parse(localStorage.getItem('ca_cfg2') || 'null');
+let CFG  = JSON.parse(localStorage.getItem('ca_cfg2') || '{"url":"https://script.google.com/macros/s/AKfycbwUBpwNCdTfaPDNp16qMwsBzzTOmZl-TBvJnpBz2nfGd3gzAdru8XYESodFDOz3TB1bjA/exec"}');
 let CU   = null; // current user — set after login, never persisted
 let TASKS= [];
 
