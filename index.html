@@ -1039,6 +1039,32 @@ function exportClientCSV(clientName){
 }
 
 
+
+function buildClientTable(data){
+  if(!data.length) return '<div class="empty"><div class="empty-ic">📊</div><p>No data for selected period</p></div>';
+  var tip = '<div style="font-size:12px;color:#0284c7;margin-bottom:10px;padding:9px 14px;background:#f0f9ff;border-radius:8px;border:1px solid #bae6fd">💡 Click any client row to open the full 360° breakdown — tasks, team, hours and comments</div>';
+  var thead = '<table class="rtbl"><thead><tr><th>Client</th><th>Tasks</th><th>Done</th><th>Billed (₹)</th><th>Unbilled (₹)</th><th>Hours</th><th></th></tr></thead><tbody>';
+  var rows = data.map(function(r){
+    var billedStr = r.billed ? '₹'+r.billed.toLocaleString('en-IN') : '—';
+    var billedStyle = r.billed ? 'color:var(--emerald);font-weight:600' : '';
+    var unbilledStr = r.unbilled ? '₹'+r.unbilled.toLocaleString('en-IN') : '—';
+    var unbilledStyle = r.unbilled ? 'color:var(--rose);font-weight:700' : '';
+    var doneStyle = r.done ? 'color:var(--emerald);font-weight:600' : '';
+    var hrsStr = r.hrs ? r.hrs+'h' : '—';
+    var clientSafe = r.client.replace(/'/g,"\\'");
+    return '<tr style="cursor:pointer" onclick="openClientDrilldown(\''+clientSafe+'\')">'+
+      '<td><strong style="color:var(--accent)">'+r.client+'</strong></td>'+
+      '<td>'+r.total+'</td>'+
+      '<td style="'+doneStyle+'">'+(r.done||'—')+'</td>'+
+      '<td class="mono" style="'+billedStyle+'">'+billedStr+'</td>'+
+      '<td class="mono" style="'+unbilledStyle+'">'+unbilledStr+'</td>'+
+      '<td class="mono" style="color:var(--sky)">'+hrsStr+'</td>'+
+      '<td><span style="font-size:11px;color:var(--accent);font-weight:600;white-space:nowrap">360° →</span></td>'+
+    '</tr>';
+  }).join('');
+  return tip + thead + rows + '</tbody></table>';
+}
+
 function generateReport(){
   const type=document.getElementById('rType').value;
   const {from,to}=getDateRange();
@@ -1070,21 +1096,7 @@ function generateReport(){
       const hrs=ct.reduce((s,t)=>s+(Array.isArray(t.hours)?t.hours.reduce((x,h)=>x+(+h.hrs||0),0):0),0);
       return{client:c,total:ct.length,done:ct.filter(t=>t.status==='Done').length,billed,unbilled,hrs};
     }).filter(r=>r.total>0);
-    html=`<div style="font-size:12px;color:#6b7280;margin-bottom:10px;padding:8px 12px;background:#f0f9ff;border-radius:8px;border:1px solid #bae6fd">
-    💡 Click any client row to open the full 360° breakdown with tasks, team, hours and comments
-    </div>
-    <table class="rtbl"><thead><tr><th>Client</th><th>Tasks</th><th>Done</th><th>Billed (₹)</th><th>Unbilled (₹)</th><th>Hours</th><th></th></tr></thead><tbody>
-    \${data.map(r=>\`<tr style="cursor:pointer" onclick="openClientDrilldown('\${r.client.replace(/'/g,'_')}')">
-      <td><strong style="color:var(--accent)">\${r.client}</strong></td>
-      <td>\${r.total}</td>
-      <td style="\${r.done?'color:var(--emerald);font-weight:600':''}">\${r.done||'—'}</td>
-      <td class="mono" style="color:var(--emerald)">\${r.billed?'₹'+r.billed.toLocaleString('en-IN'):'—'}</td>
-      <td class="mono" style="\${r.unbilled?'color:var(--rose);font-weight:700':''}">
-        \${r.unbilled?'₹'+r.unbilled.toLocaleString('en-IN'):'—'}</td>
-      <td class="mono" style="color:var(--sky)">\${r.hrs?r.hrs+'h':'—'}</td>
-      <td><span style="font-size:11px;color:var(--accent);font-weight:600">360° →</span></td>
-    </tr>\`).join('')}
-    </tbody></table>`;
+    html = buildClientTable(data);
   }
   else if(type==='employee'){
     const names=[...new Set(TASKS.flatMap(t=>Array.isArray(t.assignees)?t.assignees:[]).filter(Boolean))].sort();
