@@ -564,7 +564,7 @@ function ok(d){return ContentService.createTextOutput(JSON.stringify({ok:true,da
 // ═══════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════
-let CFG=JSON.parse(localStorage.getItem('ca_cfg3')||'null');
+let CFG=JSON.parse(localStorage.getItem('ca_cfg3')||'{"url":"https://script.google.com/macros/s/AKfycbwUBpwNCdTfaPDNp16qMwsBzzTOmZl-TBvJnpBz2nfGd3gzAdru8XYESodFDOz3TB1bjA/exec"}');
 let CU=null;
 let TASKS=[];
 let USERS=[];
@@ -1191,6 +1191,7 @@ async function loadAndRender(){
   updateBadges();
 }
 
+document.getElementById('gsUrl').value='https://script.google.com/macros/s/AKfycbwUBpwNCdTfaPDNp16qMwsBzzTOmZl-TBvJnpBz2nfGd3gzAdru8XYESodFDOz3TB1bjA/exec';
 if(CFG?.url)document.getElementById('gsUrl').value=CFG.url;
 setInterval(()=>{if(CU&&CFG)loadAndRender()},60000);
 </script>
