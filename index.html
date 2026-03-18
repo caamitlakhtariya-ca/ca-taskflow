@@ -873,6 +873,172 @@ function inRange(dateStr,from,to){
   return d>=from&&d<=to;
 }
 
+
+// ═══════════════════════════════════════════════
+// CLIENT 360° DRILL-DOWN
+// ═══════════════════════════════════════════════
+function openClientDrilldown(clientName){
+  const tasks = TASKS.filter(t => t.client === clientName);
+  const totalAmt = tasks.filter(t=>t.bill==='Yes').reduce((s,t)=>s+(+t.amt||0),0);
+  const billedAmt = tasks.filter(t=>t.billed==='Yes').reduce((s,t)=>s+(+t.amt||0),0);
+  const unbilledAmt = tasks.filter(t=>t.status==='Done'&&t.bill==='Yes'&&t.billed==='No').reduce((s,t)=>s+(+t.amt||0),0);
+  const totalHrs = tasks.reduce((s,t)=>s+(Array.isArray(t.hours)?t.hours.reduce((x,h)=>x+(+h.hrs||0),0):0),0);
+  const done = tasks.filter(t=>t.status==='Done').length;
+  const active = tasks.filter(t=>t.status==='Pending'||t.status==='In Progress').length;
+
+  // all people who worked
+  const allPeople = [...new Set(tasks.flatMap(t=>{
+    const a=Array.isArray(t.assignees)?t.assignees:[];
+    return t.leader?[t.leader,...a]:[...a];
+  }).filter(Boolean))];
+
+  const peopleRows = allPeople.map(person => {
+    const pt = tasks.filter(t=>Array.isArray(t.assignees)&&t.assignees.includes(person)||t.leader===person);
+    const pHrs = tasks.reduce((s,t)=>{
+      const h=Array.isArray(t.hours)?t.hours.filter(h=>h.who===person).reduce((x,h)=>x+(+h.hrs||0),0):0;
+      return s+h;
+    },0);
+    const isLead = tasks.filter(t=>t.leader===person).length;
+    return `<tr>
+      <td style="display:flex;align-items:center;gap:8px;padding:10px 14px">
+        <div style="width:28px;height:28px;border-radius:50%;background:${avc(person)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${ini(person)}</div>
+        <strong>${person}</strong>
+        ${isLead?`<span style="background:#fdf2f8;color:#db2777;border:1px solid #f9a8d4;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600">★ Leader</span>`:''}
+      </td>
+      <td style="padding:10px 14px;text-align:center">${pt.length}</td>
+      <td style="padding:10px 14px;text-align:center;color:#059669;font-weight:600">${pt.filter(t=>t.status==='Done').length||'—'}</td>
+      <td style="padding:10px 14px;text-align:center;color:#b45309;font-weight:600">${pt.filter(t=>t.status==='Pending'||t.status==='In Progress').length||'—'}</td>
+      <td style="padding:10px 14px;text-align:center;color:#0284c7;font-weight:600;font-family:monospace">${pHrs?pHrs+'h':'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const taskRows = tasks.map(t => {
+    const hrs = Array.isArray(t.hours)?t.hours.reduce((s,h)=>s+(+h.hrs||0),0):0;
+    const cmts = t.cmts||[];
+    const skey = t.status.replace(/ /g,'');
+    const cmtHtml = cmts.length ? cmts.map(c=>`
+      <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6">
+        <div style="width:24px;height:24px;border-radius:50%;background:${avc(c.author)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">${ini(c.author)}</div>
+        <div><span style="font-size:11px;font-weight:700">${c.author}</span> <span style="font-size:10px;color:#9ca3af">${c.time}</span><br><span style="font-size:12px;color:#4b5563">${c.text}</span></div>
+      </div>`).join('') : '<div style="font-size:12px;color:#9ca3af;padding:4px 0">No comments</div>';
+
+    const hrsHtml = Array.isArray(t.hours)&&t.hours.length ? t.hours.map(h=>`
+      <span style="background:#f0f9ff;color:#0284c7;border:1px solid #7dd3fc;font-size:10px;padding:2px 8px;border-radius:20px;margin-right:4px">${h.who}: ${h.hrs}h${h.note?' · '+h.note:''}</span>`).join('') 
+      : '<span style="font-size:12px;color:#9ca3af">No hours logged</span>';
+
+    return `<tr>
+      <td style="padding:12px 14px;vertical-align:top;min-width:200px">
+        <div style="font-weight:600;font-size:13px;margin-bottom:3px">${t.desc}</div>
+        <div style="font-size:11px;color:#6b7280">${t.cat} · ${t.src}</div>
+      </td>
+      <td style="padding:12px 14px;vertical-align:top">
+        ${t.leader?`<div style="font-size:11px;background:#fdf2f8;color:#db2777;border:1px solid #f9a8d4;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:4px;font-weight:600">★ ${t.leader}</div><br>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:3px">${(Array.isArray(t.assignees)?t.assignees:[]).filter(a=>a!==t.leader).map(a=>`<span style="background:#f3f4f6;color:#374151;font-size:10px;padding:2px 7px;border-radius:20px">${a}</span>`).join('')||'—'}</div>
+      </td>
+      <td style="padding:12px 14px;vertical-align:top;white-space:nowrap">
+        <span class="chip cs-${skey}" style="font-size:10px">${t.status}</span><br>
+        <span style="font-size:11px;color:#6b7280;margin-top:4px;display:block">${t.dl?'Due: '+fmtDate(t.dl):'No deadline'}</span>
+      </td>
+      <td style="padding:12px 14px;vertical-align:top;white-space:nowrap">
+        <div style="font-family:monospace;font-weight:700;color:${t.billed==='Yes'?'#059669':'#e11d48'};font-size:13px">₹${(+t.amt||0).toLocaleString('en-IN')}</div>
+        <div style="font-size:10px;margin-top:2px;color:${t.billed==='Yes'?'#059669':'#e11d48'};font-weight:600">${t.billed==='Yes'?'✓ Billed':'✗ Unbilled'}</div>
+      </td>
+      <td style="padding:12px 14px;vertical-align:top;min-width:120px">${hrsHtml}</td>
+      <td style="padding:12px 14px;vertical-align:top;min-width:180px">${cmtHtml}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('reportOut').innerHTML = `
+    <!-- 360 HEADER -->
+    <div style="background:linear-gradient(135deg,#1a3a6b,#2d5a9e);border-radius:14px;padding:22px 26px;margin-bottom:20px;color:#fff">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px">360° Client Report</div>
+          <div style="font-size:24px;font-weight:700">${clientName}</div>
+        </div>
+        <button onclick="exportClientCSV('${clientName}')" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">↓ Export Full Report</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:20px">
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:4px">Total Tasks</div>
+          <div style="font-size:22px;font-weight:700;font-family:monospace">${tasks.length}</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:4px">Completed</div>
+          <div style="font-size:22px;font-weight:700;font-family:monospace;color:#6ee7b7">${done}</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:4px">Active</div>
+          <div style="font-size:22px;font-weight:700;font-family:monospace;color:#fcd34d">${active}</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:4px">Total Billed</div>
+          <div style="font-size:18px;font-weight:700;font-family:monospace;color:#6ee7b7">₹${billedAmt.toLocaleString('en-IN')}</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:4px">Unbilled</div>
+          <div style="font-size:18px;font-weight:700;font-family:monospace;color:#fda4af">₹${unbilledAmt.toLocaleString('en-IN')}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM SECTION -->
+    ${allPeople.length ? `
+    <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Team working on this client</div>
+    <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:20px">
+      <thead><tr style="background:#f8fafc">
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Member</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;text-align:center">Tasks</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;text-align:center">Done</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;text-align:center">Active</th>
+        <th style="padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;text-align:center">Hours</th>
+      </tr></thead>
+      <tbody>${peopleRows}</tbody>
+    </table>` : ''}
+
+    <!-- ALL TASKS SECTION -->
+    <div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">All Tasks — with comments &amp; hours</div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)">
+      <thead><tr style="background:#f8fafc">
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Task</th>
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Team</th>
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Status</th>
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Billing</th>
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Hours</th>
+        <th style="text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Comments</th>
+      </tr></thead>
+      <tbody>${taskRows}</tbody>
+    </table>
+    </div>
+    <div style="margin-top:14px;font-size:11px;color:#9ca3af;text-align:right">Total hours: ${totalHrs}h · Total tasks: ${tasks.length} · Generated ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+  `;
+}
+
+function exportClientCSV(clientName){
+  const tasks = TASKS.filter(t => t.client === clientName);
+  const headers = ['Client','Task','Category','Leader','Assignees','Status','Deadline','Billable','Amount','Billed','Total Hours','Hours Detail','Comments'];
+  const rows = tasks.map(t => {
+    const hrs = Array.isArray(t.hours)?t.hours.reduce((s,h)=>s+(+h.hrs||0),0):0;
+    const hrsDetail = Array.isArray(t.hours)?t.hours.map(h=>`${h.who}:${h.hrs}h`).join('; '):'';
+    const cmts = (t.cmts||[]).map(c=>`${c.author}(${c.time}): ${c.text}`).join(' | ');
+    return [
+      t.client, t.desc, t.cat, t.leader||'', 
+      Array.isArray(t.assignees)?t.assignees.join('; '):'',
+      t.status, t.dl||'', t.bill, t.amt||0, t.billed,
+      hrs, hrsDetail, cmts
+    ];
+  });
+  const csv = [headers,...rows].map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = clientName.replace(/[^a-z0-9]/gi,'_')+'_360_report_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  toast('Full report exported for '+clientName,'green');
+}
+
+
 function generateReport(){
   const type=document.getElementById('rType').value;
   const {from,to}=getDateRange();
@@ -904,8 +1070,20 @@ function generateReport(){
       const hrs=ct.reduce((s,t)=>s+(Array.isArray(t.hours)?t.hours.reduce((x,h)=>x+(+h.hrs||0),0):0),0);
       return{client:c,total:ct.length,done:ct.filter(t=>t.status==='Done').length,billed,unbilled,hrs};
     }).filter(r=>r.total>0);
-    html=`<table class="rtbl"><thead><tr><th>Client</th><th>Tasks</th><th>Done</th><th>Billed (₹)</th><th>Unbilled (₹)</th><th>Hours</th></tr></thead><tbody>
-    ${data.map(r=>`<tr><td><strong>${r.client}</strong></td><td>${r.total}</td><td>${r.done}</td><td class="mono" style="color:var(--emerald)">${r.billed?'₹'+r.billed.toLocaleString('en-IN'):'—'}</td><td class="mono" style="${r.unbilled?'color:var(--rose);font-weight:700':''}">${r.unbilled?'₹'+r.unbilled.toLocaleString('en-IN'):'—'}</td><td class="mono" style="color:var(--sky)">${r.hrs?r.hrs+'h':'—'}</td></tr>`).join('')}
+    html=`<div style="font-size:12px;color:#6b7280;margin-bottom:10px;padding:8px 12px;background:#f0f9ff;border-radius:8px;border:1px solid #bae6fd">
+    💡 Click any client row to open the full 360° breakdown with tasks, team, hours and comments
+    </div>
+    <table class="rtbl"><thead><tr><th>Client</th><th>Tasks</th><th>Done</th><th>Billed (₹)</th><th>Unbilled (₹)</th><th>Hours</th><th></th></tr></thead><tbody>
+    \${data.map(r=>\`<tr style="cursor:pointer" onclick="openClientDrilldown('\${r.client.replace(/'/g,'_')}')">
+      <td><strong style="color:var(--accent)">\${r.client}</strong></td>
+      <td>\${r.total}</td>
+      <td style="\${r.done?'color:var(--emerald);font-weight:600':''}">\${r.done||'—'}</td>
+      <td class="mono" style="color:var(--emerald)">\${r.billed?'₹'+r.billed.toLocaleString('en-IN'):'—'}</td>
+      <td class="mono" style="\${r.unbilled?'color:var(--rose);font-weight:700':''}">
+        \${r.unbilled?'₹'+r.unbilled.toLocaleString('en-IN'):'—'}</td>
+      <td class="mono" style="color:var(--sky)">\${r.hrs?r.hrs+'h':'—'}</td>
+      <td><span style="font-size:11px;color:var(--accent);font-weight:600">360° →</span></td>
+    </tr>\`).join('')}
     </tbody></table>`;
   }
   else if(type==='employee'){
