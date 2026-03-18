@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Pradip B Gandhi & Co LLP — TaskFlow</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -25,7 +25,7 @@
   --sh2:0 8px 32px rgba(79,70,229,.12),0 2px 8px rgba(0,0,0,.08);
   --sh3:0 20px 60px rgba(0,0,0,.15);
 }
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh}
 
 /* ── LOGIN ── */
 .login-wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:#fff}
@@ -34,7 +34,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .login-left::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-60px;right:-60px}
 .login-left-logo{background:#fff;border-radius:20px;padding:24px 28px;margin-bottom:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,.2);position:relative;z-index:1}
 .login-left-logo img{width:120px;height:120px;object-fit:contain;display:block}
-.login-left-firm{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;text-align:center;line-height:1.4;position:relative;z-index:1;margin-bottom:10px}
+.login-left-firm{font-family:'Inter',sans-serif;font-size:22px;font-weight:700;color:#fff;text-align:center;line-height:1.4;position:relative;z-index:1;margin-bottom:10px}
 .login-left-tag{font-size:13px;color:rgba(255,255,255,.6);text-align:center;position:relative;z-index:1;letter-spacing:.5px}
 .login-left-divider{width:40px;height:2px;background:rgba(255,255,255,.25);margin:20px auto;position:relative;z-index:1}
 .login-left-features{list-style:none;position:relative;z-index:1;width:100%;max-width:260px}
@@ -44,19 +44,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .login-right{display:flex;align-items:center;justify-content:center;padding:48px;background:#fafbfd}
 .login-card{width:100%;max-width:380px}
 .login-brand{margin-bottom:36px}
-.login-brand h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#1a3a6b;line-height:1.2;margin-bottom:6px}
-.login-brand p{font-size:13px;color:#6b7280;font-family:'DM Sans',sans-serif}
+.login-brand h1{font-family:'Inter',sans-serif;font-size:28px;font-weight:700;color:#1a3a6b;line-height:1.2;margin-bottom:6px}
+.login-brand p{font-size:13px;color:#6b7280;font-family:'Inter',sans-serif}
 .login-divider{height:1px;background:#e5e7eb;margin:0 0 28px}
-.l-err{background:#fff1f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:13px;color:#e11d48;margin-bottom:16px;display:none;font-family:'DM Sans',sans-serif}
+.l-err{background:#fff1f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:13px;color:#e11d48;margin-bottom:16px;display:none;font-family:'Inter',sans-serif}
 .l-err.show{display:block}
 .l-field{margin-bottom:20px}
-.l-field label{display:block;font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;font-family:'DM Sans',sans-serif}
-.l-input{width:100%;background:#fff;border:1.5px solid #e5e7eb;border-radius:10px;padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:#111827;outline:none;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.l-field label{display:block;font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;font-family:'Inter',sans-serif}
+.l-input{width:100%;background:#fff;border:1.5px solid #e5e7eb;border-radius:10px;padding:13px 16px;font-family:'Inter',sans-serif;font-size:14px;color:#111827;outline:none;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .l-input:focus{border-color:#1a3a6b;box-shadow:0 0 0 3px rgba(26,58,107,.1)}
-.l-btn{width:100%;padding:14px;background:#1a3a6b;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:.2s;letter-spacing:.3px}
+.l-btn{width:100%;padding:14px;background:#1a3a6b;color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:.2s;letter-spacing:.3px}
 .l-btn:hover{background:#153060;transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,58,107,.3)}
 .l-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.l-hint{font-size:12px;color:#9ca3af;text-align:center;margin-top:20px;line-height:1.6;font-family:'DM Sans',sans-serif}
+.l-hint{font-size:12px;color:#9ca3af;text-align:center;margin-top:20px;line-height:1.6;font-family:'Inter',sans-serif}
 @media(max-width:768px){
   .login-wrap{grid-template-columns:1fr}
   .login-left{display:none}
@@ -67,8 +67,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .topbar{background:var(--grad2);height:54px;display:flex;align-items:center;padding:0 22px;gap:14px;position:sticky;top:0;z-index:200;display:none;border-bottom:1px solid rgba(255,255,255,.08)}
 .topbar.show{display:flex}
 .t-brand{display:flex;align-items:center;gap:10px}
-.t-icon{width:30px;height:30px;background:var(--grad);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#fff}
-.t-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:#fff}
+.t-icon{width:30px;height:30px;background:var(--grad);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:12px;color:#fff}
+.t-name{font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:#fff}
 .t-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .sync-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:20px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,.7)}
 .sdot{width:7px;height:7px;border-radius:50%;background:#6ee7b7;flex-shrink:0}
@@ -76,7 +76,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .sdot.err{background:#fda4af}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .u-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 14px 4px 6px;display:flex;align-items:center;gap:8px}
-.u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Syne',sans-serif}
+.u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Inter',sans-serif}
 .u-nm{color:#fff;font-size:12px;font-weight:600}
 .lo-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
 .lo-btn:hover{background:rgba(255,255,255,.2)}
@@ -101,7 +101,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 
 /* ── PAGE HDR ── */
 .ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
-.ph-l h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink)}
+.ph-l h1{font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:var(--ink)}
 .ph-l p{font-size:13px;color:var(--ink3);margin-top:3px}
 
 /* ── STATS ── */
@@ -136,7 +136,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .tc.p-High{border-left-color:var(--rose)}.tc.p-Medium{border-left-color:#f59e0b}.tc.p-Low{border-left-color:var(--emerald)}
 .tc.s-done{opacity:.6}
 .tc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.tc-title{font-weight:600;font-size:14px;line-height:1.4;font-family:'Syne',sans-serif}
+.tc-title{font-weight:600;font-size:14px;line-height:1.4;font-family:'Inter',sans-serif}
 .tc-client{font-size:12px;color:#7c3aed;font-weight:600;margin-top:3px}
 .tc-meta{display:flex;align-items:center;gap:7px;margin-top:11px;flex-wrap:wrap}
 .chip{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
@@ -172,7 +172,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .mbk.on{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:600px;padding:28px;box-shadow:var(--sh3);margin:auto}
 .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.mt{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.mt{font-family:'Inter',sans-serif;font-size:18px;font-weight:800}
 .mx{width:32px;height:32px;border-radius:var(--rs);background:var(--surface3);border:1px solid var(--border);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:.15s}.mx:hover{background:var(--border);color:var(--ink)}
 .fr{margin-bottom:16px}
 .fr label{display:block;font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
@@ -211,7 +211,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 /* ── COMMENTS ── */
 .ca{margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
 .ci{display:flex;gap:10px;margin-bottom:14px}
-.c-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Syne',sans-serif}
+.c-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Inter',sans-serif}
 .c-bd{flex:1}.c-hd{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .c-au{font-size:12px;font-weight:700}.c-tm{font-size:11px;color:var(--ink3)}
 .c-tx{font-size:13px;color:var(--ink2);line-height:1.5}
@@ -221,7 +221,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 
 /* ── REPORTS ── */
 .report-filters{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:20px;box-shadow:var(--sh)}
-.report-filters h3{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:14px;color:var(--ink)}
+.report-filters h3{font-family:'Inter',sans-serif;font-weight:700;font-size:15px;margin-bottom:14px;color:var(--ink)}
 .period-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .ptab{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface3);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;color:var(--ink2)}
 .ptab:hover{border-color:#7c3aed;color:#7c3aed}
@@ -265,7 +265,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 .step-bx{background:var(--surface3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .sn{width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px}
 .shd{display:flex;align-items:center;margin-bottom:8px}
-.stit{font-size:14px;font-weight:700;font-family:'Syne',sans-serif}
+.stit{font-size:14px;font-weight:700;font-family:'Inter',sans-serif}
 .sdesc{font-size:13px;color:var(--ink2);line-height:1.6;margin-left:36px}
 
 /* ── TOAST ── */
@@ -491,7 +491,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font
 <!-- DETAIL MODAL -->
 <div class="mbk" id="detM">
   <div class="modal" style="max-width:660px">
-    <div class="mh"><div class="mt" id="detTitle">Task Detail</div><div class="mx" onclick="closeModal('detM')">✕</div></div>
+    <div class="mh"><div class="mt" id="detTitle">Task Detail</div><div style="display:flex;gap:8px;align-items:center"><button class="btn btn-ghost btn-sm" id="editTaskBtn" onclick="openEditTask()" style="font-size:12px">✏️ Edit Task</button><div class="mx" onclick="closeModal('detM')">✕</div></div></div>
     <div id="detBody"></div>
   </div>
 </div>
@@ -555,6 +555,37 @@ function handle(e){
 function ok(d){return ContentService.createTextOutput(JSON.stringify({ok:true,data:d})).setMimeType(ContentService.MimeType.JSON)}">Click to copy full script ↗</div>
     </div>
     <div class="fa"><button class="btn btn-ghost" onclick="closeModal('setupM')">Cancel</button><button class="btn btn-primary" onclick="saveSetup()">Save &amp; Connect</button></div>
+  </div>
+</div>
+
+
+<!-- EDIT TASK MODAL -->
+<div class="mbk" id="editM">
+  <div class="modal" style="max-width:640px">
+    <div class="mh"><div class="mt">✏️ Edit Task</div><div class="mx" onclick="closeModal('editM')">✕</div></div>
+    <div class="fr"><label>Client Name *</label><input class="fi" id="eClient" placeholder="Client name" list="clDl2"><datalist id="clDl2"></datalist></div>
+    <div class="fr"><label>Task Description *</label><textarea class="fta" id="eDesc" rows="3"></textarea></div>
+    <div class="fg">
+      <div class="fr"><label>Category</label><select class="fsel" id="eCat"><option>GST Filing</option><option>ITR Filing</option><option>TDS/TCS</option><option>MCA/ROC</option><option>Audit/Accounts</option><option>Payroll/PF</option><option>Tax Notices</option><option>Advisory</option><option>Other</option></select></div>
+      <div class="fr"><label>Received via</label><select class="fsel" id="eSrc"><option>WhatsApp</option><option>Email</option><option>Phone</option><option>Teams</option><option>Walk-in</option><option>Internal</option></select></div>
+    </div>
+    <div class="fg">
+      <div class="fr"><label>Deadline</label><input class="fi" type="date" id="eDl"></div>
+      <div class="fr"><label>Priority</label><select class="fsel" id="ePri"><option>High</option><option>Medium</option><option>Low</option></select></div>
+    </div>
+    <div class="fg">
+      <div class="fr"><label>Billable?</label><select class="fsel" id="eBill"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+      <div class="fr"><label>Bill Amount (₹)</label><input class="fi" type="number" id="eAmt" placeholder="0"></div>
+    </div>
+    <div class="fr" id="eAssigneeSection">
+      <label>Assignees &amp; Leader</label>
+      <div class="assignee-grid" id="eAssigneeGrid"></div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:6px">★ = Set as Leader</div>
+    </div>
+    <div class="fa">
+      <button class="btn btn-ghost" onclick="closeModal('editM')">Cancel</button>
+      <button class="btn btn-primary" id="saveEditBtn" onclick="saveEditTask()">Save Changes</button>
+    </div>
   </div>
 </div>
 
@@ -785,7 +816,7 @@ function renderTeam(){
     const done=assigned.filter(t=>t.status==='Done').length;
     const od=assigned.filter(t=>{const dl=t.dl?new Date(t.dl):null;return dl&&dl<today&&t.status!=='Done'}).length;
     const hrs=TASKS.reduce((s,t)=>{const h=Array.isArray(t.hours)?t.hours.filter(h=>h.who===u).reduce((x,h)=>x+(+h.hrs||0),0):0;return s+h},0);
-    return`<tr><td style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:${avc(u)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Syne',sans-serif">${ini(u)}</div><strong>${u}</strong></td>
+    return`<tr><td style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:${avc(u)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Inter',sans-serif">${ini(u)}</div><strong>${u}</strong></td>
     <td style="${leading.length?'color:var(--pink);font-weight:700':''}">${leading.length||'—'}</td>
     <td>${assigned.length||'—'}</td>
     <td style="${pend?'color:var(--amber);font-weight:700':''}">${pend||'—'}</td>
@@ -955,6 +986,7 @@ function tCard(t){
 // DETAIL
 // ═══════════════════════════════════════════════
 function openDetail(id){
+  curEditId=id;
   const t=TASKS.find(x=>x.id===id);if(!t)return;
   document.getElementById('detTitle').textContent=t.desc;
   const canEdit=CU&&(isAdmin()||isAssigned(t));
@@ -1126,7 +1158,7 @@ async function renderUsers(){
   const tbody=document.getElementById('usersTbody');
   if(!USERS.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--ink3)">No users yet</td></tr>`;return}
   tbody.innerHTML=USERS.map(u=>`<tr>
-    <td style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:${avc(u.name)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Syne',sans-serif">${ini(u.name)}</div><strong>${u.name}</strong></td>
+    <td style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:${avc(u.name)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Inter',sans-serif">${ini(u.name)}</div><strong>${u.name}</strong></td>
     <td class="mono" style="font-weight:600;color:#7c3aed">${u.uid}</td>
     <td class="mono">${u.pwd}</td>
     <td><span class="chip ${u.role==='admin'?'cs-Done':u.role==='leader'?'c-leader':'cs-Pending'}">${u.role}</span></td>
@@ -1178,9 +1210,14 @@ function toast(msg,type){
 }
 
 function fmtDate(d){
-  if(!d)return'—';
-  try{const[y,m,day]=String(d).split('-');const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${+day} ${mo[+m-1]} ${y}`}
-  catch{return String(d)}
+  if(!d||d===''||d==='undefined'||d==='null')return'—';
+  try{
+    const s=String(d).trim();
+    if(s.includes('/')){const[dd,mm,yy]=s.split('/');const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${+dd} ${mo[+mm-1]} ${yy}`}
+    const parts=s.split('-');
+    if(parts.length===3){const[y,m,day]=parts;if(!y||!m||!day||isNaN(+m)||isNaN(+day))return s;const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${+day} ${mo[+m-1]} ${y}`}
+    return s;
+  }catch{return String(d)}
 }
 
 async function loadAndRender(){
@@ -1193,6 +1230,108 @@ async function loadAndRender(){
 
 document.getElementById('gsUrl').value='https://script.google.com/macros/s/AKfycbwUBpwNCdTfaPDNp16qMwsBzzTOmZl-TBvJnpBz2nfGd3gzAdru8XYESodFDOz3TB1bjA/exec';
 if(CFG?.url)document.getElementById('gsUrl').value=CFG.url;
+
+// ═══════════════════════════════════════════════
+// EDIT TASK
+// ═══════════════════════════════════════════════
+let curEditId = null;
+let editLeader = '';
+
+function openEditTask(){
+  const titleEl = document.getElementById('detTitle');
+  const taskTitle = titleEl ? titleEl.textContent : '';
+  const t = TASKS.find(x => x.desc === taskTitle) || TASKS.find(x => x.id === curEditId);
+  if(!t) return;
+  curEditId = t.id;
+  editLeader = t.leader || '';
+
+  // Populate fields
+  document.getElementById('eClient').value = t.client || '';
+  document.getElementById('eDesc').value = t.desc || '';
+  document.getElementById('eDl').value = t.dl || '';
+  document.getElementById('eBill').value = t.bill || 'Yes';
+  document.getElementById('eAmt').value = t.amt || '';
+
+  // Set category
+  const catSel = document.getElementById('eCat');
+  for(let o of catSel.options) if(o.value === t.cat) { catSel.value = t.cat; break; }
+
+  // Set source
+  const srcSel = document.getElementById('eSrc');
+  for(let o of srcSel.options) if(o.value === t.src) { srcSel.value = t.src; break; }
+
+  // Set priority
+  const priSel = document.getElementById('ePri');
+  for(let o of priSel.options) if(o.value === t.pri) { priSel.value = t.pri; break; }
+
+  // Client datalist
+  const cls = [...new Set(TASKS.map(x => x.client))].sort();
+  document.getElementById('clDl2').innerHTML = cls.map(c => `<option value="${c}">`).join('');
+
+  // Assignee grid
+  const assignees = Array.isArray(t.assignees) ? t.assignees : [];
+  const names = USERS.length ? USERS.map(u => u.name) :
+    [...new Set(TASKS.flatMap(x => Array.isArray(x.assignees) ? x.assignees : []).filter(Boolean))];
+
+  const grid = document.getElementById('eAssigneeGrid');
+  grid.innerHTML = [...new Set([...names, ...assignees])].filter(Boolean).sort().map(n => `
+    <label class="a-check ${n === editLeader ? 'is-leader' : ''}">
+      <input type="checkbox" name="easgn" value="${n}" ${assignees.includes(n) ? 'checked' : ''}>
+      <span style="width:18px;height:18px;border-radius:50%;background:${avc(n)};display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0">${ini(n)}</span>
+      ${n}
+      <span style="margin-left:auto;cursor:pointer;font-size:14px" title="Set as leader" onclick="setEditLeader('${n}',this)">${n === editLeader ? '★' : '☆'}</span>
+    </label>`).join('');
+
+  closeModal('detM');
+  openModal('editM');
+}
+
+function setEditLeader(name, el){
+  editLeader = name;
+  document.querySelectorAll('#eAssigneeGrid .a-check').forEach(c => {
+    c.classList.remove('is-leader');
+    const star = c.querySelector('span[title]');
+    if(star) star.textContent = '☆';
+  });
+  el.textContent = '★';
+  el.closest('.a-check').classList.add('is-leader');
+  el.closest('.a-check').querySelector('input[type=checkbox]').checked = true;
+}
+
+async function saveEditTask(){
+  const t = TASKS.find(x => x.id === curEditId);
+  if(!t) return;
+
+  const client = document.getElementById('eClient').value.trim();
+  const desc = document.getElementById('eDesc').value.trim();
+  if(!client || !desc){ toast('Client and description required','amber'); return; }
+
+  const assignees = [...document.querySelectorAll('#eAssigneeGrid input[name=easgn]:checked')].map(c => c.value);
+  if(!assignees.length){ toast('Assign to at least one member','amber'); return; }
+  const leader = editLeader || (assignees.length === 1 ? assignees[0] : '');
+
+  const btn = document.getElementById('saveEditBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const row = t.gsRow;
+  // Update all editable columns
+  await api({action:'update', row, col:2,  val: client});
+  await api({action:'update', row, col:3,  val: desc});
+  await api({action:'update', row, col:4,  val: document.getElementById('eCat').value});
+  await api({action:'update', row, col:5,  val: document.getElementById('eSrc').value});
+  await api({action:'update', row, col:6,  val: JSON.stringify(assignees)});
+  await api({action:'update', row, col:7,  val: leader});
+  await api({action:'update', row, col:8,  val: document.getElementById('eDl').value});
+  await api({action:'update', row, col:9,  val: document.getElementById('ePri').value});
+  await api({action:'update', row, col:11, val: document.getElementById('eBill').value});
+  await api({action:'update', row, col:12, val: document.getElementById('eAmt').value || 0});
+
+  btn.disabled = false; btn.textContent = 'Save Changes';
+  closeModal('editM');
+  toast('Task updated successfully','green');
+  await loadAndRender();
+}
+
 setInterval(()=>{if(CU&&CFG)loadAndRender()},60000);
 </script>
 </body>
