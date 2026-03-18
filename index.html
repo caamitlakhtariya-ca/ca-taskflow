@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TaskFlow CA</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f6f9;--surface:#fff;--surface2:#f8fafc;--surface3:#eef1f6;
+  --border:#e3e8f0;--border2:#cdd5e0;
+  --text:#141c2e;--text2:#526070;--text3:#96a3b5;
+  --accent:#1a56db;--accent-lt:#eff4ff;--accent-bd:#c3d4fd;
+  --green:#0e9f6e;--green-lt:#f0fdf4;--green-bd:#a7f3d0;
+  --red:#e02424;--red-lt:#fff1f2;--red-bd:#fca5a5;
+  --amber:#d97706;--amber-lt:#fffbeb;--amber-bd:#fcd34d;
+  --purple:#7e3af2;--purple-lt:#f5f3ff;--purple-bd:#ddd6fe;
+  --teams:#5b5fc7;
+  --r:10px;--rs:7px;--rl:14px;
+  --sh:0 1px 4px rgba(0,0,0,.07);--sh2:0 6px 24px rgba(0,0,0,.1);
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+
+/* ── LOGIN SCREEN ── */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a3a6b 0%,#5b5fc7 100%);padding:20px}
+.login-box{background:var(--surface);border-radius:20px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
+.login-logo-mark{width:44px;height:44px;background:var(--teams);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff}
+.login-title{font-size:22px;font-weight:700;color:var(--text)}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px;text-align:center}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.login-input{width:100%;background:var(--surface3);border:1.5px solid var(--border);border-radius:var(--r);padding:11px 14px;font-family:inherit;font-size:14px;color:var(--text);outline:none;transition:.15s}
+.login-input:focus{border-color:var(--accent);background:var(--surface)}
+.login-btn{width:100%;padding:12px;background:var(--teams);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:.15s}
+.login-btn:hover{background:#4a4fb0}
+.login-btn:disabled{opacity:.6;cursor:not-allowed}
+.login-error{background:var(--red-lt);border:1px solid var(--red-bd);border-radius:var(--rs);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none}
+.login-error.show{display:block}
+.login-hint{font-size:11px;color:var(--text3);text-align:center;margin-top:16px;line-height:1.6}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--teams);height:52px;display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:200;display:none}
+.topbar.show{display:flex}
+.t-logo{width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff}
+.t-name{color:#fff;font-weight:600;font-size:15px}
+.t-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.sync-wrap{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.7)}
+.sdot{width:7px;height:7px;border-radius:50%;background:#6ee7b7}
+.sdot.err{background:#fca5a5}.sdot.busy{background:#fcd34d;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.u-chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px 4px 8px;display:flex;align-items:center;gap:8px}
+.u-av{width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--teams)}
+.u-nm{color:#fff;font-size:12px;font-weight:600}
+.logout-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+.logout-btn:hover{background:rgba(255,255,255,.25)}
+
+/* ── LAYOUT ── */
+.app-layout{display:none}
+.app-layout.show{display:flex}
+.sidebar{width:208px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:14px 8px;display:flex;flex-direction:column;gap:2px;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto}
+.s-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:10px 10px 4px}
+.nav{padding:8px 11px;border-radius:var(--rs);cursor:pointer;display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2);transition:.12s;user-select:none;font-weight:500}
+.nav:hover{background:var(--surface3);color:var(--text)}
+.nav.on{background:var(--accent-lt);color:var(--accent);font-weight:700}
+.nav .ic{width:18px;text-align:center;font-size:14px;flex-shrink:0}
+.nb{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;min-width:20px;text-align:center}
+.nb.red{background:var(--red);color:#fff}
+.nb.amber{background:var(--amber);color:#fff}
+.nb.blue{background:var(--accent);color:#fff}
+.main{flex:1;padding:24px 28px;min-width:0;overflow-y:auto;height:calc(100vh - 52px)}
+
+/* ── PANELS ── */
+.panel{display:none}.panel.on{display:block}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.ph h1{font-size:20px;font-weight:700}
+.ph p{font-size:13px;color:var(--text2);margin-top:3px}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.sc::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px}
+.sc.blue::after{background:var(--accent)}.sc.red::after{background:var(--red)}.sc.green::after{background:var(--green)}.sc.amber::after{background:var(--amber)}
+.sc-n{font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.sc-l{font-size:12px;color:var(--text2);margin-top:5px}
+
+/* ── TOOLBAR ── */
+.tb{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.fi-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-family:inherit;font-size:13px;color:var(--text);outline:none;transition:.12s}
+.fi-sm:focus{border-color:var(--accent)}
+.fi-sm.stretch{flex:1;min-width:180px}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 18px;border-radius:var(--rs);border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;transition:.12s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#1648c9}
+.btn-ghost{background:var(--surface);color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{background:var(--surface3)}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#0a7a55}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── TASK CARD ── */
+.tlist{display:flex;flex-direction:column;gap:8px}
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 18px;cursor:pointer;transition:.15s;border-left:3px solid transparent;box-shadow:var(--sh)}
+.tc:hover{border-color:var(--border2);box-shadow:var(--sh2);transform:translateY(-1px)}
+.tc.p-High{border-left-color:var(--red)}.tc.p-Medium{border-left-color:var(--amber)}.tc.p-Low{border-left-color:var(--green)}
+.tc.s-done{opacity:.65}
+.tc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tc-title{font-weight:600;font-size:14px;line-height:1.4}
+.tc-client{font-size:12px;color:var(--accent);font-weight:600;margin-top:2px}
+.tc-meta{display:flex;align-items:center;gap:7px;margin-top:10px;flex-wrap:wrap}
+.chip{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+.cs-Pending{background:var(--amber-lt);color:var(--amber);border:1px solid var(--amber-bd)}
+.cs-InProgress{background:var(--accent-lt);color:var(--accent);border:1px solid var(--accent-bd)}
+.cs-Done{background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd)}
+.cs-OnHold{background:var(--surface3);color:var(--text3);border:1px solid var(--border)}
+.c-cat{background:var(--purple-lt);color:var(--purple);border:1px solid var(--purple-bd)}
+.c-who{background:var(--surface3);color:var(--text2);border:1px solid var(--border)}
+.c-ub{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd)}
+.dl-od{font-size:11px;color:var(--red);font-weight:700}
+.dl-soon{font-size:11px;color:var(--amber);font-weight:600}
+.dl-ok{font-size:11px;color:var(--text3)}
+
+/* ── ALERTS ── */
+.alert{border-radius:var(--r);padding:12px 18px;display:flex;align-items:center;gap:12px;margin-bottom:18px;box-shadow:var(--sh)}
+.alert.red{background:var(--red-lt);border:1px solid var(--red-bd)}
+.alert.amber{background:var(--amber-lt);border:1px solid var(--amber-bd)}
+.alert.green{background:var(--green-lt);border:1px solid var(--green-bd)}
+.alert .ai{font-size:18px}
+.alert strong{font-size:13px;font-weight:700;display:block}
+.alert span{font-size:12px;color:var(--text2)}
+
+/* ── SECTION HDR ── */
+.sh{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+.sh::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* ── MODAL ── */
+.mbk{position:fixed;inset:0;background:rgba(15,25,50,.5);z-index:400;display:none;align-items:flex-start;justify-content:center;padding:36px 16px;overflow-y:auto}
+.mbk.on{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);width:100%;max-width:580px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.15);margin:auto}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.mt{font-size:17px;font-weight:700}
+.mx{width:30px;height:30px;border-radius:var(--rs);background:var(--surface3);border:1px solid var(--border);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)}.mx:hover{color:var(--text)}
+.fr{margin-bottom:14px}
+.fr label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.fi,.fsel,.fta{width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-family:inherit;font-size:13px;color:var(--text);outline:none;transition:.12s}
+.fi:focus,.fsel:focus,.fta:focus{border-color:var(--accent);background:var(--surface)}
+.fsel option{background:var(--surface)}.fta{resize:vertical;min-height:72px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fa{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+
+/* ── DETAIL ── */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.di label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+.di span{font-size:13px}
+.status-row{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 18px}
+.sb{padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface3);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.12s}
+.sb:hover{border-color:var(--accent);color:var(--accent)}
+.sb.a-Pending{background:var(--amber-lt);border-color:var(--amber-bd);color:var(--amber)}
+.sb.a-InProgress{background:var(--accent-lt);border-color:var(--accent-bd);color:var(--accent)}
+.sb.a-Done{background:var(--green-lt);border-color:var(--green-bd);color:var(--green)}
+.sb.a-OnHold{background:var(--surface3);border-color:var(--border2);color:var(--text2)}
+
+/* ── COMMENTS ── */
+.ca{margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+.ci{display:flex;gap:10px;margin-bottom:14px}
+.c-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.c-bd{flex:1}.c-hd{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.c-au{font-size:12px;font-weight:700}.c-tm{font-size:11px;color:var(--text3)}
+.c-tx{font-size:13px;color:var(--text2);line-height:1.5}
+.c-row{display:flex;gap:8px;margin-top:12px}
+.c-in{flex:1;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;font-family:inherit;font-size:13px;color:var(--text);outline:none;resize:none;min-height:38px}
+.c-in:focus{border-color:var(--accent);background:var(--surface)}
+
+/* ── USERS TABLE (admin) ── */
+.users-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh)}
+.users-table th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px}
+.users-table td{padding:11px 14px;border-bottom:1px solid var(--bg);font-size:13px}
+.users-table tr:last-child td{border-bottom:none}
+.users-table tr:hover td{background:var(--surface3)}
+
+/* ── BILLING TABLE ── */
+.btbl{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh)}
+.btbl th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px}
+.btbl td{padding:11px 14px;border-bottom:1px solid var(--bg);font-size:13px}
+.btbl tr:last-child td{border-bottom:none}
+.btbl tr:hover td{background:var(--surface3)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-ic{font-size:36px;margin-bottom:10px}
+
+/* ── LOADING ── */
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--text2);font-size:13px}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TOAST ── */
+.tw{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{color:#fff;border-radius:var(--r);padding:10px 16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:var(--sh2);animation:tin .2s ease;max-width:300px}
+@keyframes tin{from{transform:translateY(6px);opacity:0}to{transform:translateY(0);opacity:1}}
+.toast.out{animation:tout .2s ease forwards}
+@keyframes tout{to{transform:translateY(6px);opacity:0}}
+
+/* ── SETUP BANNER ── */
+.setup-bar{background:linear-gradient(90deg,#1a56db,#7e3af2);color:#fff;padding:9px 20px;display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer}
+.setup-bar.hide{display:none}
+
+/* ── SETUP MODAL ── */
+.step-box{background:var(--surface3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.sn{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px}
+.sh2{display:flex;align-items:center;margin-bottom:8px}
+.st{font-size:14px;font-weight:700}
+.sd{font-size:13px;color:var(--text2);line-height:1.6;margin-left:36px}
+.code-box{background:#1e293b;color:#e2e8f0;border-radius:var(--rs);padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;margin:8px 0 8px 36px;cursor:pointer;word-break:break-all;line-height:1.7;position:relative}
+.code-box::after{content:"Click to copy";position:absolute;right:8px;top:8px;font-size:9px;color:#94a3b8;background:#1e293b;padding:2px 6px;border-radius:4px}
+.code-box:hover::after{content:"Copied!"}
+
+@media(max-width:680px){
+  .sidebar{display:none}.stats{grid-template-columns:1fr 1fr}.main{padding:14px 16px}
+  .fg{grid-template-columns:1fr}.dg{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN SCREEN ══════════ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-mark">CA</div>
+    </div>
+    <div style="text-align:center;margin-bottom:6px">
+      <div style="font-size:22px;font-weight:700">TaskFlow CA</div>
+      <div style="font-size:13px;color:var(--text2);margin-top:4px">Sign in to your account</div>
+    </div>
+    <div style="height:1px;background:var(--border);margin:20px 0"></div>
+    <div class="login-error" id="loginError">Incorrect User ID or password. Please try again.</div>
+    <div class="login-field">
+      <label>User ID</label>
+      <input class="login-input" id="loginId" placeholder="Enter your User ID" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('loginPwd').focus()">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input class="login-input" id="loginPwd" type="password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-hint">Contact your CA Principal to get your<br>User ID and password</div>
+  </div>
+</div>
+
+<!-- ══════════ MAIN APP ══════════ -->
+<div class="setup-bar hide" id="setupBar" onclick="openModal('setupM')">
+  <span>⚙</span>
+  <span>Google Sheets not connected — <strong>Click to connect (2 min)</strong></span>
+</div>
+
+<div class="topbar" id="topbar">
+  <div class="t-logo">CA</div>
+  <span class="t-name">TaskFlow CA</span>
+  <div class="t-right">
+    <div class="sync-wrap"><div class="sdot" id="sdot"></div><span id="stxt">—</span></div>
+    <div class="u-chip">
+      <div class="u-av" id="uAv">?</div>
+      <span class="u-nm" id="uNm">—</span>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </div>
+</div>
+
+<div class="app-layout" id="appLayout">
+  <div class="sidebar" id="sidebar">
+    <div class="nav on" id="nav-dash" onclick="go('dash',this)"><span class="ic">📊</span>Dashboard</div>
+    <div class="nav" id="nav-my" onclick="go('my',this)"><span class="ic">👤</span>My Tasks<span class="nb blue" id="nb-my">0</span></div>
+    <!-- admin only -->
+    <div class="s-lbl admin-only" style="display:none">Admin</div>
+    <div class="nav admin-only" id="nav-all" style="display:none" onclick="go('all',this)"><span class="ic">📋</span>All Tasks<span class="nb red" id="nb-all">0</span></div>
+    <div class="nav admin-only" id="nav-bill" style="display:none" onclick="go('bill',this)"><span class="ic">💰</span>Unbilled<span class="nb amber" id="nb-bill">0</span></div>
+    <div class="nav admin-only" id="nav-team" style="display:none" onclick="go('team',this)"><span class="ic">👥</span>Team View</div>
+    <div class="nav admin-only" id="nav-clients" style="display:none" onclick="go('clients',this)"><span class="ic">🏢</span>Clients</div>
+    <div class="nav admin-only" id="nav-users" style="display:none" onclick="go('users',this)"><span class="ic">🔐</span>Manage Users</div>
+    <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="nav admin-only" style="display:none" onclick="openModal('setupM')"><span class="ic">⚙️</span>Settings</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div class="panel on" id="p-dash">
+      <div class="ph"><div><h1 id="d-greet">Good morning 👋</h1><p id="d-sub">Loading…</p></div><button class="btn btn-primary" onclick="openNewTask()">+ New Task</button></div>
+      <div class="stats">
+        <div class="sc blue"><div class="sc-n" id="s-tot">—</div><div class="sc-l" id="s-tot-l">Active tasks</div></div>
+        <div class="sc red"><div class="sc-n" id="s-od" style="color:var(--red)">—</div><div class="sc-l">Overdue</div></div>
+        <div class="sc blue"><div class="sc-n" id="s-ip" style="color:var(--accent)">—</div><div class="sc-l">In progress</div></div>
+        <div class="sc amber"><div class="sc-n mono" id="s-ub" style="color:var(--amber)">₹—</div><div class="sc-l">Unbilled amount</div></div>
+      </div>
+      <div id="d-alert"></div>
+      <div class="sh">Overdue &amp; high priority</div>
+      <div class="tlist" id="d-urgent"></div>
+      <div class="sh">Recent tasks</div>
+      <div class="tlist" id="d-recent"></div>
+    </div>
+
+    <!-- MY TASKS -->
+    <div class="panel" id="p-my">
+      <div class="ph"><div><h1>My Tasks</h1><p id="my-sub">Your assigned tasks</p></div><button class="btn btn-primary" onclick="openNewTask()">+ Log Task</button></div>
+      <div id="my-alert"></div>
+      <div class="tlist" id="my-list"><div class="loading"><div class="spin"></div>Loading…</div></div>
+    </div>
+
+    <!-- ALL TASKS (admin) -->
+    <div class="panel" id="p-all">
+      <div class="ph"><div><h1>All Tasks</h1><p>Full team task register</p></div><button class="btn btn-primary" onclick="openNewTask()">+ New Task</button></div>
+      <div class="tb">
+        <input class="fi-sm stretch" id="srch" placeholder="🔍  Search tasks, clients…" oninput="renderAll()">
+        <select class="fi-sm" id="f-st" onchange="renderAll()"><option value="">All status</option><option>Pending</option><option>In Progress</option><option>Done</option><option>On Hold</option></select>
+        <select class="fi-sm" id="f-who" onchange="renderAll()"><option value="">All members</option></select>
+        <select class="fi-sm" id="f-cat" onchange="renderAll()"><option value="">All categories</option><option>GST Filing</option><option>ITR Filing</option><option>TDS/TCS</option><option>MCA/ROC</option><option>Audit/Accounts</option><option>Payroll/PF</option><option>Tax Notices</option><option>Advisory</option><option>Other</option></select>
+      </div>
+      <div class="tlist" id="all-list"></div>
+    </div>
+
+    <!-- BILLING (admin) -->
+    <div class="panel" id="p-bill">
+      <div class="ph"><div><h1>Unbilled Tasks</h1><p>Done tasks not yet invoiced in Tally</p></div></div>
+      <div id="bill-alert"></div>
+      <table class="btbl"><thead><tr><th>Client</th><th>Task</th><th>Category</th><th>Assigned To</th><th>Done On</th><th>Days</th><th>Amount</th><th>Action</th></tr></thead>
+      <tbody id="bill-body"></tbody></table>
+    </div>
+
+    <!-- TEAM (admin) -->
+    <div class="panel" id="p-team">
+      <div class="ph"><div><h1>Team Workload</h1><p>Live status per team member</p></div></div>
+      <div id="team-content"></div>
+    </div>
+
+    <!-- CLIENTS (admin) -->
+    <div class="panel" id="p-clients">
+      <div class="ph"><div><h1>Client Summary</h1><p>Per-client task and billing overview</p></div></div>
+      <div id="clients-content"></div>
+    </div>
+
+    <!-- MANAGE USERS (admin) -->
+    <div class="panel" id="p-users">
+      <div class="ph">
+        <div><h1>Manage Users</h1><p>Create and manage login credentials for your team</p></div>
+        <button class="btn btn-primary" onclick="openModal('addUserM')">+ Add User</button>
+      </div>
+      <div class="alert amber" style="margin-bottom:20px">
+        <div class="ai">🔐</div>
+        <div><strong>Keep this page private</strong><span>Only you (Admin) can see this. Share each person's User ID and password with them individually.</span></div>
+      </div>
+      <table class="users-table" id="users-table">
+        <thead><tr><th>Name</th><th>User ID</th><th>Password</th><th>Role</th><th>Actions</th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ NEW TASK MODAL ══════════ -->
+<div class="mbk" id="newM">
+  <div class="modal">
+    <div class="mh"><div class="mt">Log New Task</div><div class="mx" onclick="closeModal('newM')">✕</div></div>
+    <div class="fr"><label>Client Name *</label><input class="fi" id="n-cl" placeholder="e.g. Mehta Traders" list="cl-dl"><datalist id="cl-dl"></datalist></div>
+    <div class="fr"><label>Task Description *</label><textarea class="fta" id="n-desc" rows="3" placeholder="Describe the work clearly…"></textarea></div>
+    <div class="fg">
+      <div class="fr"><label>Category</label><select class="fsel" id="n-cat"><option>GST Filing</option><option>ITR Filing</option><option>TDS/TCS</option><option>MCA/ROC</option><option>Audit/Accounts</option><option>Payroll/PF</option><option>Tax Notices</option><option>Advisory</option><option>Other</option></select></div>
+      <div class="fr"><label>Received via</label><select class="fsel" id="n-src"><option>WhatsApp</option><option>Email</option><option>Phone</option><option>Teams</option><option>Walk-in</option><option>Internal</option></select></div>
+    </div>
+    <div class="fg">
+      <div class="fr"><label>Assign To *</label><select class="fsel" id="n-who"></select></div>
+      <div class="fr"><label>Deadline</label><input class="fi" type="date" id="n-dl"></div>
+    </div>
+    <div class="fg">
+      <div class="fr"><label>Priority</label><select class="fsel" id="n-pri"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+      <div class="fr"><label>Billable?</label><select class="fsel" id="n-bill"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+    </div>
+    <div class="fr"><label>Bill Amount (₹)</label><input class="fi" type="number" id="n-amt" placeholder="0"></div>
+    <div class="fr"><label>Initial Note</label><textarea class="fta" id="n-note" rows="2" placeholder="Any context for the assignee…"></textarea></div>
+    <div class="fa"><button class="btn btn-ghost" onclick="closeModal('newM')">Cancel</button><button class="btn btn-primary" id="subBtn" onclick="submitTask()">Create Task</button></div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="mbk" id="detM">
+  <div class="modal" style="max-width:640px">
+    <div class="mh"><div class="mt" id="det-title">Task Detail</div><div class="mx" onclick="closeModal('detM')">✕</div></div>
+    <div id="det-body"></div>
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div class="mbk" id="addUserM">
+  <div class="modal" style="max-width:440px">
+    <div class="mh"><div class="mt" id="addUserTitle">Add Team Member</div><div class="mx" onclick="closeModal('addUserM')">✕</div></div>
+    <div class="fr"><label>Full Name</label><input class="fi" id="au-name" placeholder="e.g. Priya Shah"></div>
+    <div class="fg">
+      <div class="fr"><label>User ID</label><input class="fi" id="au-id" placeholder="e.g. priya01"></div>
+      <div class="fr"><label>Password</label><input class="fi" id="au-pwd" placeholder="e.g. Priya@2025"></div>
+    </div>
+    <div class="fr"><label>Role</label>
+      <select class="fsel" id="au-role"><option value="staff">Staff</option><option value="admin">Admin</option></select>
+    </div>
+    <div class="alert amber" style="margin-top:4px">
+      <div class="ai">💡</div>
+      <div><strong>After adding</strong><span>Share the User ID and password with this person directly. They use it to sign in.</span></div>
+    </div>
+    <div class="fa"><button class="btn btn-ghost" onclick="closeModal('addUserM')">Cancel</button><button class="btn btn-primary" onclick="saveUser()">Save User</button></div>
+  </div>
+</div>
+
+<!-- SETUP MODAL -->
+<div class="mbk" id="setupM">
+  <div class="modal" style="max-width:620px">
+    <div class="mh"><div class="mt">⚙️ Google Sheets Setup</div><div class="mx" onclick="closeModal('setupM')">✕</div></div>
+
+    <div class="step-box">
+      <div class="sh2"><span class="sn">1</span><div class="st">Your Tasks Sheet URL (already set up)</div></div>
+      <div class="sd">Paste your existing Google Apps Script Web App URL:</div>
+      <input class="fi" id="gs-tasks" placeholder="https://script.google.com/macros/s/…/exec" style="margin:8px 0 0 36px;width:calc(100% - 36px);font-size:12px;font-family:'JetBrains Mono',monospace">
+    </div>
+
+    <div class="step-box">
+      <div class="sh2"><span class="sn">2</span><div class="st">Create a Users Sheet (new — for logins)</div></div>
+      <div class="sd">
+        In the same Google Sheet → click <strong>+</strong> at the bottom to add a new tab → name it <strong>"Users"</strong><br><br>
+        In Row 1 of the Users tab, paste these headers:
+      </div>
+      <div class="code-box" onclick="copyText(this)" data-copy="UserID	Password	Name	Role">UserID &nbsp; Password &nbsp; Name &nbsp; Role</div>
+      <div class="sd" style="margin-top:8px">Then add your team. Example rows:</div>
+      <div class="code-box" onclick="copyText(this)" data-copy="admin01	Admin@2025	CA Principal	admin
+priya01	Priya@2025	Priya Shah	staff
+raj01	Raj@2025	Raj Patel	staff">
+        admin01 &nbsp; Admin@2025 &nbsp; CA Principal &nbsp; admin<br>
+        priya01 &nbsp; Priya@2025 &nbsp; Priya Shah &nbsp; staff<br>
+        raj01 &nbsp;&nbsp;&nbsp; Raj@2025 &nbsp;&nbsp; Raj Patel &nbsp;&nbsp; staff
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="sh2"><span class="sn">3</span><div class="st">Update your Apps Script to support Users</div></div>
+      <div class="sd">Go to Extensions → Apps Script → replace your code with this updated version → Save → <strong>New Deployment</strong> → copy new URL:</div>
+      <div class="code-box" style="max-height:130px;overflow-y:auto;cursor:default" onclick="copyText(this)" data-copy="function doGet(e){return handle(e)}
+function handle(e){
+  var p=e.parameter;
+  var wb=SpreadsheetApp.getActiveSpreadsheet();
+  var ss=wb.getSheetByName('Sheet1')||wb.getActiveSheet();
+  var us=wb.getSheetByName('Users');
+  if(p.action==='auth'){
+    if(!us)return ok({ok:false,msg:'Users sheet not found'});
+    var ud=us.getDataRange().getValues();
+    for(var i=1;i<ud.length;i++){
+      if(String(ud[i][0])===p.uid&&String(ud[i][1])===p.pwd){
+        return ok({ok:true,name:ud[i][2],role:ud[i][3]});
+      }
+    }
+    return ok({ok:false,msg:'Invalid credentials'});
+  }
+  if(p.action==='getUsers'){
+    if(!us)return ok([]);
+    var d=us.getDataRange().getValues();
+    return ok(d);
+  }
+  if(p.action==='addUser'){
+    if(!us)return ok('no users sheet');
+    us.appendRow(JSON.parse(p.row));return ok('added');
+  }
+  if(p.action==='delUser'){
+    if(!us)return ok('no users sheet');
+    us.deleteRow(parseInt(p.row));return ok('deleted');
+  }
+  if(p.action==='read'){var d=ss.getDataRange().getValues();return ok(d)}
+  if(p.action==='append'){ss.appendRow(JSON.parse(p.row));return ok('added')}
+  if(p.action==='update'){ss.getRange(parseInt(p.row),parseInt(p.col)).setValue(p.val);return ok('updated')}
+  if(p.action==='delete'){ss.deleteRow(parseInt(p.row));return ok('deleted')}
+  return ok('ok')
+}
+function ok(d){return ContentService.createTextOutput(JSON.stringify({ok:true,data:d})).setMimeType(ContentService.MimeType.JSON)}">
+        function doGet(e){return handle(e)}<br>
+        function handle(e){<br>
+        &nbsp;var p=e.parameter;<br>
+        &nbsp;var wb=SpreadsheetApp.getActiveSpreadsheet();<br>
+        &nbsp;var ss=wb.getSheetByName('Sheet1')||wb.getActiveSheet();<br>
+        &nbsp;var us=wb.getSheetByName('Users');<br>
+        &nbsp;if(p.action==='auth'){...checks UserID+Password...}<br>
+        &nbsp;if(p.action==='read'){...reads tasks...}<br>
+        &nbsp;// + append, update, delete, addUser, delUser<br>
+        }
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="sh2"><span class="sn">4</span><div class="st">Paste the new Web App URL</div></div>
+      <input class="fi" id="gs-url-new" placeholder="https://script.google.com/macros/s/…/exec" style="margin:8px 0 0 36px;width:calc(100% - 36px);font-size:12px;font-family:'JetBrains Mono',monospace">
+    </div>
+
+    <div class="fa"><button class="btn btn-ghost" onclick="closeModal('setupM')">Cancel</button><button class="btn btn-primary" onclick="saveSetup()">Save & Connect</button></div>
+  </div>
+</div>
+
+<div class="tw" id="toasts"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let CFG  = JSON.parse(localStorage.getItem('ca_cfg2') || '{"url":"https://script.google.com/macros/s/AKfycbwUBpwNCdTfaPDNp16qMwsBzzTOmZl-TBvJnpBz2nfGd3gzAdru8XYESodFDOz3TB1bjA/exec"}');
+let CU   = null; // current user — set after login, never persisted
+let TASKS= [];
+
+const AVC=['#1a56db','#0e9f6e','#d97706','#7e3af2','#db2777','#0891b2','#ea580c','#65a30d','#be185d','#0369a1'];
+function avc(n){let h=0;for(let c of n||'')h=(h<<5)-h+c.charCodeAt(0);return AVC[Math.abs(h)%AVC.length]}
+function ini(n){return(n||'?').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()}
+function isAdmin(){return CU&&CU.role==='admin'}
+
+// ══════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════
+async function doLogin(){
+  const uid=document.getElementById('loginId').value.trim();
+  const pwd=document.getElementById('loginPwd').value;
+  if(!uid||!pwd){showLoginError('Please enter your User ID and password');return}
+
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Signing in…';
+
+  // If no sheet configured yet — allow admin bootstrap
+  if(!CFG){
+    showLoginError('App not configured yet. Please contact your CA Principal.');
+    btn.disabled=false;btn.textContent='Sign In';
+    return;
+  }
+
+  try{
+    const r=await fetch(`${CFG.url}?action=auth&uid=${encodeURIComponent(uid)}&pwd=${encodeURIComponent(pwd)}`);
+    const j=await r.json();
+    if(j.data&&j.data.ok){
+      CU={id:uid,name:j.data.name,role:j.data.role};
+      onLoginSuccess();
+    } else {
+      showLoginError('Incorrect User ID or password. Please try again.');
+    }
+  } catch(e){
+    // Fallback: check hardcoded admin for first-time setup
+    if(uid==='admin'&&pwd==='admin123'&&CFG){
+      CU={id:'admin',name:'CA Principal',role:'admin'};
+      onLoginSuccess();
+    } else {
+      showLoginError('Cannot connect. Check your internet connection.');
+    }
+  }
+  btn.disabled=false;btn.textContent='Sign In';
+}
+
+function showLoginError(msg){
+  const el=document.getElementById('loginError');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+
+function onLoginSuccess(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('topbar').classList.add('show');
+  document.getElementById('appLayout').classList.add('show');
+  document.getElementById('uNm').textContent=CU.name;
+  document.getElementById('uAv').textContent=ini(CU.name);
+  document.getElementById('uAv').style.background=avc(CU.name);
+  document.getElementById('uAv').style.color='#fff';
+
+  // Show admin nav items
+  if(isAdmin()){
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
+  }
+
+  // Populate assignee dropdown — staff sees only self, admin sees all
+  loadAndRender();
+  if(CFG&&!CFG.url){document.getElementById('setupBar').classList.remove('hide')}
+}
+
+function doLogout(){
+  CU=null;TASKS=[];
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('topbar').classList.remove('show');
+  document.getElementById('appLayout').classList.remove('show');
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPwd').value='';
+  // hide admin items again
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+}
+
+// ══════════════════════════════════════════════
+// GOOGLE SHEETS API
+// ══════════════════════════════════════════════
+async function gsCall(params){
+  if(!CFG||!CFG.url)return null;
+  try{
+    setSyncing(true);
+    const qs=Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+    const r=await fetch(CFG.url+'?'+qs);
+    const j=await r.json();
+    setSynced();
+    return j.data;
+  }catch(e){setError();return null}
+}
+
+async function loadTasks(){
+  const rows=await gsCall({action:'read'});
+  if(!rows)return;
+  TASKS=rows.slice(1).filter(r=>r[0]).map((r,i)=>({
+    gsRow:i+2,id:r[0],client:r[1],desc:r[2],cat:r[3],src:r[4],
+    who:r[5],dl:r[6],pri:r[7],status:r[8],bill:r[9],amt:r[10],
+    billed:r[11],ca:r[12],comp:r[13],
+    cmts:r[14]?tryParse(r[14]):[]
+  }));
+}
+
+function tryParse(s){try{return JSON.parse(s)}catch(e){return[]}}
+
+function setSyncing(v){if(v){document.getElementById('sdot').className='sdot busy';document.getElementById('stxt').textContent='Syncing…'}}
+function setSynced(){document.getElementById('sdot').className='sdot';document.getElementById('stxt').textContent='Synced ✓'}
+function setError(){document.getElementById('sdot').className='sdot err';document.getElementById('stxt').textContent='Sync error'}
+
+async function loadAndRender(){
+  await loadTasks();
+  const active=document.querySelector('.panel.on');
+  if(active)renderPanel(active.id.replace('p-',''));
+  updateBadges();
+  // populate filters
+  const staff=getStaffNames();
+  document.getElementById('f-who').innerHTML=`<option value="">All members</option>`+staff.map(n=>`<option>${n}</option>`).join('');
+  // client datalist
+  const cls=[...new Set(TASKS.map(t=>t.client))].sort();
+  document.getElementById('cl-dl').innerHTML=cls.map(c=>`<option value="${c}">`).join('');
+}
+
+function getStaffNames(){
+  // unique names from tasks + current user
+  const names=new Set(TASKS.map(t=>t.who).filter(Boolean));
+  if(CU)names.add(CU.name);
+  return [...names].sort();
+}
+
+// ══════════════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════════════
+function saveSetup(){
+  const url=(document.getElementById('gs-url-new').value||document.getElementById('gs-tasks').value).trim();
+  if(!url||!url.includes('script.google.com')){toast('Please paste a valid Web App URL','red');return}
+  CFG={url};
+  localStorage.setItem('ca_cfg2',JSON.stringify(CFG));
+  closeModal('setupM');
+  document.getElementById('setupBar').classList.add('hide');
+  toast('Connected! Loading data…','green');
+  loadAndRender();
+}
+
+function copyText(el){
+  const txt=el.dataset.copy||el.innerText.replace(/\s+/g,' ').trim();
+  navigator.clipboard.writeText(txt).then(()=>toast('Copied','green')).catch(()=>{});
+}
+
+// ══════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════
+function go(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  if(el)el.classList.add('on');
+  renderPanel(id);
+}
+function renderPanel(id){
+  if(id==='dash')renderDash();
+  if(id==='my')renderMy();
+  if(id==='all')renderAll();
+  if(id==='bill')renderBilling();
+  if(id==='team')renderTeam();
+  if(id==='clients')renderClients();
+  if(id==='users')renderUsers();
+  updateBadges();
+}
+
+function updateBadges(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const myT=TASKS.filter(t=>t.who===CU?.name&&t.status!=='Done');
+  const active=TASKS.filter(t=>t.status!=='Done'&&t.status!=='Cancelled');
+  const ub=TASKS.filter(t=>t.status==='Done'&&t.bill==='Yes'&&t.billed==='No');
+  document.getElementById('nb-my').textContent=myT.length;
+  document.getElementById('nb-all').textContent=active.length;
+  document.getElementById('nb-bill').textContent=ub.length;
+}
+
+// ══════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════
+function renderDash(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const hr=new Date().getHours();
+  const greet=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  document.getElementById('d-greet').textContent=greet+' '+CU.name.split(' ')[0]+' 👋';
+  document.getElementById('d-sub').textContent='Your dashboard · '+new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+
+  // Scope: admin sees all, staff sees own
+  const scope=isAdmin()?TASKS:TASKS.filter(t=>t.who===CU.name);
+  const active=scope.filter(t=>t.status!=='Done'&&t.status!=='Cancelled');
+  const od=scope.filter(t=>{const dl=t.dl?new Date(t.dl):null;return dl&&dl<today&&t.status!=='Done'});
+  const ip=scope.filter(t=>t.status==='In Progress');
+  const ubAmt=scope.filter(t=>t.status==='Done'&&t.bill==='Yes'&&t.billed==='No').reduce((s,t)=>s+(+t.amt||0),0);
+
+  document.getElementById('s-tot').textContent=active.length;
+  document.getElementById('s-tot-l').textContent=isAdmin()?'Active tasks (firm)':'My active tasks';
+  document.getElementById('s-od').textContent=od.length;
+  document.getElementById('s-ip').textContent=ip.length;
+  document.getElementById('s-ub').textContent='₹'+ubAmt.toLocaleString('en-IN');
+
+  const ab=document.getElementById('d-alert');
+  ab.innerHTML=od.length
+    ?`<div class="alert red"><div class="ai">🚨</div><div><strong>${od.length} task${od.length>1?'s':''} overdue</strong><span>${isAdmin()?'Review and follow up with team.':'Please update your task status.'}</span></div></div>`
+    :`<div class="alert green"><div class="ai">✅</div><div><strong>No overdue tasks</strong><span>Everything is on track.</span></div></div>`;
+
+  const urgent=[...od,...scope.filter(t=>t.pri==='High'&&t.status!=='Done')].filter((t,i,a)=>a.findIndex(x=>x.id===t.id)===i).slice(0,5);
+  document.getElementById('d-urgent').innerHTML=urgent.length?urgent.map(tCard).join(''):`<div class="empty"><div class="empty-ic">✅</div><p>No urgent tasks</p></div>`;
+  document.getElementById('d-recent').innerHTML=[...scope].sort((a,b)=>b.id-a.id).slice(0,5).map(tCard).join('');
+}
+
+// ══════════════════════════════════════════════
+// MY TASKS
+// ══════════════════════════════════════════════
+function renderMy(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const od=TASKS.filter(t=>{const dl=t.dl?new Date(t.dl):null;return t.who===CU.name&&dl&&dl<today&&t.status!=='Done'});
+  document.getElementById('my-alert').innerHTML=od.length?`<div class="alert amber"><div class="ai">⚠️</div><div><strong>${od.length} task${od.length>1?'s':''} overdue</strong><span>Please update the status or add a comment explaining the delay.</span></div></div>`:'';
+  const mine=TASKS.filter(t=>t.who===CU.name&&t.status!=='Cancelled').sort((a,b)=>{const o={Pending:0,'In Progress':1,Done:2,'On Hold':3};return(o[a.status]||0)-(o[b.status]||0)});
+  document.getElementById('my-list').innerHTML=mine.length?mine.map(tCard).join(''):`<div class="empty"><div class="empty-ic">🎉</div><p>No tasks assigned to you</p></div>`;
+}
+
+// ══════════════════════════════════════════════
+// ALL TASKS (admin only)
+// ══════════════════════════════════════════════
+function renderAll(){
+  const q=(document.getElementById('srch')?.value||'').toLowerCase();
+  const fs=document.getElementById('f-st')?.value||'';
+  const fw=document.getElementById('f-who')?.value||'';
+  const fc=document.getElementById('f-cat')?.value||'';
+  let list=TASKS.filter(t=>{
+    if(!isAdmin()&&t.who!==CU?.name)return false;
+    if(q&&!t.desc.toLowerCase().includes(q)&&!t.client.toLowerCase().includes(q))return false;
+    if(fs&&t.status!==fs)return false;
+    if(fw&&t.who!==fw)return false;
+    if(fc&&t.cat!==fc)return false;
+    return true;
+  }).sort((a,b)=>{const p={High:0,Medium:1,Low:2};return(p[a.pri]||1)-(p[b.pri]||1)});
+  document.getElementById('all-list').innerHTML=list.length?list.map(tCard).join(''):`<div class="empty"><div class="empty-ic">📭</div><p>No tasks match your filters</p></div>`;
+}
+
+// ══════════════════════════════════════════════
+// BILLING (admin)
+// ══════════════════════════════════════════════
+function renderBilling(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const ub=TASKS.filter(t=>t.status==='Done'&&t.bill==='Yes'&&t.billed==='No');
+  const tot=ub.reduce((s,t)=>s+(+t.amt||0),0);
+  document.getElementById('bill-alert').innerHTML=ub.length
+    ?`<div class="alert red"><div class="ai">💰</div><div><strong>₹${tot.toLocaleString('en-IN')} pending across ${ub.length} tasks</strong><span>Raise invoices in Tally then mark each as Billed.</span></div></div>`
+    :`<div class="alert green"><div class="ai">✅</div><div><strong>All billed — no revenue leakage</strong></div></div>`;
+  const tb=document.getElementById('bill-body');
+  if(!ub.length){tb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:36px;color:var(--text3)">No unbilled tasks</td></tr>`;return}
+  tb.innerHTML=ub.sort((a,b)=>a.client>b.client?1:-1).map(t=>{
+    const days=t.comp?Math.ceil((today-new Date(t.comp))/86400000):'-';
+    const dc=typeof days==='number'&&days>7?'color:var(--red);font-weight:700':typeof days==='number'&&days>3?'color:var(--amber)':'';
+    return`<tr><td><strong>${t.client}</strong></td><td style="max-width:180px">${t.desc}</td><td><span class="chip c-cat">${t.cat}</span></td><td>${t.who}</td><td>${t.comp?fmtDate(t.comp):'—'}</td><td style="${dc}">${days}d</td><td class="mono">₹${(+t.amt||0).toLocaleString('en-IN')}</td><td><button class="btn btn-success btn-sm" onclick="markBilled('${t.id}',${t.gsRow})">Mark Billed</button></td></tr>`;
+  }).join('');
+}
+async function markBilled(id,gsRow){
+  await gsCall({action:'update',row:gsRow,col:12,val:'Yes'});
+  toast('Marked as billed','green');
+  await loadAndRender();
+}
+
+// ══════════════════════════════════════════════
+// TEAM (admin)
+// ══════════════════════════════════════════════
+function renderTeam(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const names=[...new Set(TASKS.map(t=>t.who).filter(Boolean))].sort();
+  if(!names.length){document.getElementById('team-content').innerHTML=`<div class="empty"><p>No tasks logged yet</p></div>`;return}
+  document.getElementById('team-content').innerHTML=`
+  <table class="btbl"><thead><tr><th>Member</th><th>Pending</th><th>In Progress</th><th>Done</th><th>Overdue</th><th>Unbilled</th></tr></thead><tbody>
+  ${names.map(u=>{
+    const ut=TASKS.filter(t=>t.who===u);
+    const pend=ut.filter(t=>t.status==='Pending').length;
+    const ip=ut.filter(t=>t.status==='In Progress').length;
+    const done=ut.filter(t=>t.status==='Done').length;
+    const od=ut.filter(t=>{const dl=t.dl?new Date(t.dl):null;return dl&&dl<today&&t.status!=='Done'}).length;
+    const ub=ut.filter(t=>t.status==='Done'&&t.bill==='Yes'&&t.billed==='No').length;
+    return`<tr><td style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:50%;background:${avc(u)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">${ini(u)}</div><strong>${u}</strong></td><td style="${pend?'color:var(--amber);font-weight:700':''}">${pend||'—'}</td><td style="${ip?'color:var(--accent);font-weight:700':''}">${ip||'—'}</td><td style="${done?'color:var(--green);font-weight:700':''}">${done||'—'}</td><td style="${od?'color:var(--red);font-weight:700':''}">${od||'—'}</td><td style="${ub?'color:var(--amber);font-weight:700':''}">${ub||'—'}</td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+// ══════════════════════════════════════════════
+// CLIENTS (admin)
+// ══════════════════════════════════════════════
+function renderClients(){
+  const cls=[...new Set(TASKS.map(t=>t.client))].sort();
+  if(!cls.length){document.getElementById('clients-content').innerHTML=`<div class="empty"><p>No clients yet</p></div>`;return}
+  document.getElementById('clients-content').innerHTML=`
+  <table class="btbl"><thead><tr><th>Client</th><th>Total</th><th>Done</th><th>Pending/Active</th><th>Unbilled Tasks</th><th>Unbilled (₹)</th></tr></thead><tbody>
+  ${cls.map(c=>{
+    const ct=TASKS.filter(t=>t.client===c);
+    const done=ct.filter(t=>t.status==='Done').length;
+    const pend=ct.filter(t=>t.status==='Pending'||t.status==='In Progress').length;
+    const ub=ct.filter(t=>t.status==='Done'&&t.bill==='Yes'&&t.billed==='No');
+    const ubAmt=ub.reduce((s,t)=>s+(+t.amt||0),0);
+    return`<tr><td><strong>${c}</strong></td><td>${ct.length}</td><td style="${done?'color:var(--green);font-weight:600':''}">${done||'—'}</td><td style="${pend?'color:var(--amber);font-weight:600':''}">${pend||'—'}</td><td style="${ub.length?'color:var(--red);font-weight:700':''}">${ub.length||'—'}</td><td class="mono" style="${ubAmt?'color:var(--red);font-weight:700':''}">${ubAmt?'₹'+ubAmt.toLocaleString('en-IN'):'—'}</td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+// ══════════════════════════════════════════════
+// MANAGE USERS (admin)
+// ══════════════════════════════════════════════
+async function renderUsers(){
+  const rows=await gsCall({action:'getUsers'});
+  const tbody=document.getElementById('users-tbody');
+  if(!rows||rows.length<=1){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3)">No users yet — add your first team member</td></tr>`;return}
+  tbody.innerHTML=rows.slice(1).filter(r=>r[0]).map((r,i)=>`
+    <tr>
+      <td style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:50%;background:${avc(r[2])};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">${ini(r[2])}</div><strong>${r[2]}</strong></td>
+      <td class="mono" style="font-weight:600">${r[0]}</td>
+      <td class="mono">${r[1]}</td>
+      <td><span class="chip ${r[3]==='admin'?'cs-Done':'cs-Pending'}">${r[3]}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delUser(${i+2})">Remove</button></td>
+    </tr>`).join('');
+}
+
+async function saveUser(){
+  const name=document.getElementById('au-name').value.trim();
+  const uid=document.getElementById('au-id').value.trim();
+  const pwd=document.getElementById('au-pwd').value.trim();
+  const role=document.getElementById('au-role').value;
+  if(!name||!uid||!pwd){toast('All fields required','red');return}
+  await gsCall({action:'addUser',row:JSON.stringify([uid,pwd,name,role])});
+  closeModal('addUserM');
+  ['au-name','au-id','au-pwd'].forEach(i=>document.getElementById(i).value='');
+  toast('User added — share credentials with '+name,'green');
+  renderUsers();
+}
+
+async function delUser(gsRow){
+  if(!confirm('Remove this user? They will no longer be able to login.'))return;
+  await gsCall({action:'delUser',row:gsRow});
+  toast('User removed','red');
+  renderUsers();
+}
+
+// ══════════════════════════════════════════════
+// TASK CARD
+// ══════════════════════════════════════════════
+function tCard(t){
+  const today=new Date();today.setHours(0,0,0,0);
+  const dl=t.dl?new Date(t.dl):null;
+  const od=dl&&dl<today&&t.status!=='Done';
+  const dd=dl?Math.ceil((dl-today)/86400000):null;
+  const ub=t.status==='Done'&&t.bill==='Yes'&&t.billed==='No';
+  const skey=t.status.replace(/ /g,'');
+  let dlH='';
+  if(dl){
+    if(od)dlH=`<span class="dl-od">⚠ ${Math.abs(dd)}d overdue</span>`;
+    else if(dd===0)dlH=`<span class="dl-od">Due today</span>`;
+    else if(dd<=3)dlH=`<span class="dl-soon">Due in ${dd}d</span>`;
+    else dlH=`<span class="dl-ok">📅 ${fmtDate(t.dl)}</span>`;
+  }
+  return`<div class="tc p-${t.pri}${t.status==='Done'?' s-done':''}" onclick="openDetail('${t.id}')">
+    <div class="tc-top"><div><div class="tc-title">${t.desc}</div><div class="tc-client">${t.client}</div></div><div style="flex-shrink:0">${dlH}</div></div>
+    <div class="tc-meta">
+      <span class="chip cs-${skey}">${t.status}</span>
+      <span class="chip c-cat">${t.cat}</span>
+      <span class="chip c-who" style="display:inline-flex;align-items:center;gap:5px"><span style="width:16px;height:16px;border-radius:50%;background:${avc(t.who)};display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">${ini(t.who)}</span>${t.who}</span>
+      ${ub?`<span class="chip c-ub">💰 Unbilled</span>`:''}
+      ${t.cmts&&t.cmts.length?`<span class="chip c-who">💬 ${t.cmts.length}</span>`:''}
+      ${t.amt?`<span class="chip c-who mono">₹${(+t.amt).toLocaleString('en-IN')}</span>`:''}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// DETAIL
+// ══════════════════════════════════════════════
+function openDetail(id){
+  const t=TASKS.find(x=>x.id===id);if(!t)return;
+  document.getElementById('det-title').textContent=t.desc;
+  const canEdit=CU&&(isAdmin()||CU.name===t.who);
+  const today=new Date();today.setHours(0,0,0,0);
+  const od=t.dl&&new Date(t.dl)<today&&t.status!=='Done';
+
+  document.getElementById('det-body').innerHTML=`
+    <div class="dg">
+      <div class="di"><label>Client</label><span style="color:var(--accent);font-weight:700">${t.client}</span></div>
+      <div class="di"><label>Category</label><span class="chip c-cat">${t.cat}</span></div>
+      <div class="di"><label>Assigned To</label><span style="display:flex;align-items:center;gap:7px"><span style="width:22px;height:22px;border-radius:50%;background:${avc(t.who)};display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">${ini(t.who)}</span>${t.who}</span></div>
+      <div class="di"><label>Source</label><span>${t.src}</span></div>
+      <div class="di"><label>Deadline</label><span style="${od?'color:var(--red);font-weight:700':''}">${t.dl?fmtDate(t.dl):'—'}${od?' ⚠ OVERDUE':''}</span></div>
+      <div class="di"><label>Priority</label><span>${t.pri}</span></div>
+      <div class="di"><label>Bill Amount</label><span class="mono" style="color:var(--green);font-weight:700">₹${(+t.amt||0).toLocaleString('en-IN')}</span></div>
+      <div class="di"><label>Billing</label><span style="${t.billed==='No'&&t.bill==='Yes'?'color:var(--red);font-weight:700':'color:var(--green)'}">
+        ${t.billed==='Yes'?'✓ Billed':t.bill==='Yes'?'✗ NOT BILLED':'Non-billable'}</span></div>
+    </div>
+    ${canEdit?`
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Update Status</div>
+      <div class="status-row">
+        ${['Pending','In Progress','Done','On Hold'].map(s=>`<button class="sb${t.status===s?' a-'+s.replace(/ /g,''):''}" onclick="setStatus('${t.id}',${t.gsRow},'${s}')">${s}</button>`).join('')}
+      </div>
+    </div>
+    <div class="fr" style="margin-bottom:18px">
+      <label>Bill Amount (₹)</label>
+      <div style="display:flex;gap:8px">
+        <input class="fi" type="number" id="amt-inp" value="${t.amt||''}" style="max-width:180px" placeholder="0">
+        <button class="btn btn-ghost btn-sm" onclick="updateAmt('${t.id}',${t.gsRow})">Save</button>
+      </div>
+    </div>`:''}
+    <div class="ca">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Progress Comments (${(t.cmts||[]).length})</div>
+      ${(t.cmts||[]).map(c=>`<div class="ci"><div class="c-av" style="background:${avc(c.author)}">${ini(c.author)}</div><div class="c-bd"><div class="c-hd"><span class="c-au">${c.author}</span><span class="c-tm">${c.time}</span></div><div class="c-tx">${c.text}</div></div></div>`).join('')}
+      ${!(t.cmts||[]).length?`<div style="font-size:12px;color:var(--text3);margin-bottom:10px">No updates yet.</div>`:''}
+      ${CU?`<div class="c-row"><textarea class="c-in" id="c-inp-${t.id}" placeholder="Add a progress update or note…" rows="2"></textarea><button class="btn btn-primary btn-sm" style="align-self:flex-start;margin-top:2px" onclick="addComment('${t.id}',${t.gsRow})">Post</button></div>`:''}
+    </div>
+    ${isAdmin()?`<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)"><button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}',${t.gsRow})">Delete Task</button></div>`:''}`;
+  openModal('detM');
+}
+
+async function setStatus(id,gsRow,s){
+  const t=TASKS.find(x=>x.id===id);if(!t)return;
+  t.status=s;
+  if(s==='Done'&&!t.comp)t.comp=new Date().toISOString().split('T')[0];
+  await gsCall({action:'update',row:gsRow,col:9,val:s});
+  if(s==='Done')await gsCall({action:'update',row:gsRow,col:14,val:t.comp});
+  toast('Status → '+s,'green');
+  await loadAndRender();openDetail(id);
+}
+async function updateAmt(id,gsRow){
+  const v=document.getElementById('amt-inp')?.value||0;
+  await gsCall({action:'update',row:gsRow,col:11,val:v});
+  toast('Amount updated','green');
+  await loadAndRender();openDetail(id);
+}
+async function addComment(id,gsRow){
+  const inp=document.getElementById('c-inp-'+id);
+  const txt=inp?.value.trim();if(!txt)return;
+  const t=TASKS.find(x=>x.id===id);if(!t)return;
+  const cmts=t.cmts||[];
+  cmts.push({author:CU.name,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),text:txt});
+  await gsCall({action:'update',row:gsRow,col:15,val:JSON.stringify(cmts)});
+  toast('Comment posted','green');
+  await loadAndRender();openDetail(id);
+}
+async function deleteTask(id,gsRow){
+  if(!confirm('Delete this task? It will be removed from Google Sheets.'))return;
+  await gsCall({action:'delete',row:gsRow});
+  toast('Task deleted','red');closeModal('detM');
+  await loadAndRender();
+}
+
+// ══════════════════════════════════════════════
+// NEW TASK
+// ══════════════════════════════════════════════
+function openNewTask(){
+  if(!CFG){openModal('setupM');return}
+  const sel=document.getElementById('n-who');
+  const names=isAdmin()?getStaffNames():[CU.name];
+  sel.innerHTML=names.map(n=>`<option${n===CU.name?' selected':''}>${n}</option>`).join('');
+  const dl=new Date();dl.setDate(dl.getDate()+7);
+  document.getElementById('n-dl').value=dl.toISOString().split('T')[0];
+  openModal('newM');
+}
+async function submitTask(){
+  const client=document.getElementById('n-cl').value.trim();
+  const desc=document.getElementById('n-desc').value.trim();
+  if(!client||!desc){toast('Client and description required','red');return}
+  const btn=document.getElementById('subBtn');
+  btn.disabled=true;btn.textContent='Saving…';
+  const note=document.getElementById('n-note').value.trim();
+  const id='T'+Date.now();
+  const row=[id,client,desc,
+    document.getElementById('n-cat').value,
+    document.getElementById('n-src').value,
+    document.getElementById('n-who').value,
+    document.getElementById('n-dl').value,
+    document.getElementById('n-pri').value,
+    'Pending',
+    document.getElementById('n-bill').value,
+    document.getElementById('n-amt').value||0,
+    'No',
+    new Date().toISOString().split('T')[0],'',
+    note?JSON.stringify([{author:CU.name,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),text:note}]):'[]'
+  ];
+  await gsCall({action:'append',row:JSON.stringify(row)});
+  btn.disabled=false;btn.textContent='Create Task';
+  closeModal('newM');
+  ['n-cl','n-desc','n-note','n-amt'].forEach(i=>document.getElementById(i).value='');
+  toast('Task created for '+client,'green');
+  await loadAndRender();
+}
+
+// ══════════════════════════════════════════════
+// MODALS + UTILS
+// ══════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('on')}
+function closeModal(id){document.getElementById(id).classList.remove('on')}
+document.querySelectorAll('.mbk').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('on')}));
+
+function toast(msg,type){
+  const c={green:'#0e9f6e',red:'#e02424',blue:'#1a56db'};
+  const el=document.createElement('div');
+  el.className='toast';el.style.background=c[type]||'#141c2e';el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200)},2600);
+}
+
+function fmtDate(d){
+  if(!d)return'—';
+  try{const[y,m,day]=String(d).split('-');const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${+day} ${mo[+m-1]} ${y}`}
+  catch(e){return String(d)}
+}
+
+// Load CFG into setup modal if exists
+if(CFG&&CFG.url){
+  document.getElementById('gs-tasks').value=CFG.url;
+  document.getElementById('gs-url-new').value=CFG.url;
+}
+// Auto-refresh every 60s when logged in
+setInterval(()=>{if(CU&&CFG)loadAndRender()},60000);
+</script>
+</body>
+</html>
