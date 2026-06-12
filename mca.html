@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PBGCO — MCA Compliance Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f0f2f5;
+  --surf:     #ffffff;
+  --surf2:    #f7f8fa;
+  --bdr:      #e2e5ea;
+  --ink:      #1a1d23;
+  --ink2:     #4a5568;
+  --ink3:     #8a9bb0;
+  --navy:     #0f1f3d;
+  --blue:     #1a56db;
+  --blue2:    #e8f0fe;
+  --grn:      #0d7a4e;
+  --glt:      #e6f7f0;
+  --red:      #c0392b;
+  --rlt:      #fdecea;
+  --amb:      #b45309;
+  --alt:      #fff8e6;
+  --sky:      #0284c7;
+  --slt:      #e0f2fe;
+  --gry:      #64748b;
+  --glc:      #f1f5f9;
+  --r:        6px;
+  --sh:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --sh2:      0 4px 16px rgba(0,0,0,.12);
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family:'IBM Plex Sans',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:13px;
+  min-height:100vh;
+}
+
+/* ── LOGIN ──────────────────────────────────────────── */
+#loginWrap {
+  position:fixed; inset:0;
+  background:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  z-index:1000;
+}
+.login-box {
+  background:#fff;
+  border-radius:12px;
+  padding:40px 44px;
+  width:380px;
+  box-shadow:var(--sh2);
+}
+.login-logo {
+  font-size:11px; font-weight:700; letter-spacing:3px;
+  text-transform:uppercase; color:var(--ink3);
+  margin-bottom:6px;
+}
+.login-title {
+  font-size:22px; font-weight:700; color:var(--navy);
+  margin-bottom:4px;
+}
+.login-sub { font-size:12px; color:var(--ink3); margin-bottom:28px; }
+.lfi {
+  width:100%; padding:10px 14px; border:1px solid var(--bdr);
+  border-radius:var(--r); font-family:inherit; font-size:13px;
+  color:var(--ink); background:#fff; margin-bottom:12px;
+  transition:border .15s;
+}
+.lfi:focus { outline:none; border-color:var(--blue); }
+.lbtn {
+  width:100%; padding:11px; border:none; border-radius:var(--r);
+  background:var(--navy); color:#fff; font-family:inherit;
+  font-size:13px; font-weight:600; cursor:pointer;
+  transition:opacity .15s;
+}
+.lbtn:hover { opacity:.88; }
+.lerr { color:var(--red); font-size:11px; margin-top:8px; min-height:16px; }
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+#appWrap { display:none; min-height:100vh; }
+#appWrap.show { display:block; }
+
+/* ── TOPBAR ─────────────────────────────────────────── */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:var(--navy);
+  height:52px;
+  display:flex; align-items:center;
+  padding:0 20px; gap:16px;
+}
+.tb-brand {
+  font-size:11px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; color:#fff; opacity:.9;
+}
+.tb-title {
+  font-size:13px; font-weight:500; color:rgba(255,255,255,.6);
+}
+.tb-spacer { flex:1; }
+.tb-fy {
+  display:flex; align-items:center; gap:8px;
+}
+.fy-select {
+  padding:4px 10px; border:1px solid rgba(255,255,255,.2);
+  border-radius:var(--r); background:rgba(255,255,255,.08);
+  color:#fff; font-family:inherit; font-size:12px; cursor:pointer;
+}
+.fy-select option { background:var(--navy); }
+.tb-sync {
+  font-size:11px; color:rgba(255,255,255,.5);
+  display:flex; align-items:center; gap:5px;
+}
+.sdot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,.3);
+  transition:background .3s;
+}
+.sdot.busy { background:#f59e0b; animation:pulse .8s infinite; }
+.sdot.ok   { background:#10b981; }
+.sdot.err  { background:#ef4444; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.tb-user {
+  display:flex; align-items:center; gap:8px;
+  font-size:12px; color:rgba(255,255,255,.8);
+}
+.tb-av {
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:#fff;
+  background:var(--blue);
+}
+.tb-logout {
+  padding:4px 10px; border:1px solid rgba(255,255,255,.25);
+  border-radius:var(--r); background:transparent; color:rgba(255,255,255,.7);
+  font-family:inherit; font-size:11px; cursor:pointer;
+}
+.tb-logout:hover { background:rgba(255,255,255,.1); }
+
+/* ── TAB NAV ─────────────────────────────────────────── */
+.tabnav {
+  background:var(--surf);
+  border-bottom:1px solid var(--bdr);
+  padding:0 20px;
+  display:flex; gap:0;
+}
+.tnav {
+  padding:12px 18px; font-size:12px; font-weight:500;
+  color:var(--ink3); border-bottom:2px solid transparent;
+  cursor:pointer; transition:.15s; white-space:nowrap;
+  background:none; border-top:none; border-left:none; border-right:none;
+  font-family:inherit;
+}
+.tnav:hover { color:var(--ink); }
+.tnav.on { color:var(--blue); border-bottom-color:var(--blue); font-weight:600; }
+
+/* ── MAIN CONTENT ────────────────────────────────────── */
+.main { padding:20px; }
+
+/* ── PANELS ─────────────────────────────────────────── */
+.panel { display:none; }
+.panel.on { display:block; }
+
+/* ── DASHBOARD ───────────────────────────────────────── */
+.dash-stats {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px; margin-bottom:20px;
+}
+.stat-card {
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:var(--r); padding:16px;
+  box-shadow:var(--sh);
+}
+.stat-card .sl { font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:.6px; color:var(--ink3); margin-bottom:6px; }
+.stat-card .sv { font-size:28px; font-weight:700; color:var(--ink);
+  font-family:'IBM Plex Mono',monospace; }
+.stat-card .ss { font-size:11px; color:var(--ink3); margin-top:3px; }
+
+.dash-alerts {
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:var(--r); box-shadow:var(--sh);
+  margin-bottom:20px;
+}
+.dash-alerts-hdr {
+  padding:14px 18px; border-bottom:1px solid var(--bdr);
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.6px; color:var(--ink2);
+}
+.alert-row {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 18px; border-bottom:1px solid var(--bdr);
+  font-size:12px;
+}
+.alert-row:last-child { border-bottom:none; }
+.alert-badge {
+  font-size:10px; font-weight:700; padding:2px 8px;
+  border-radius:20px; white-space:nowrap;
+}
+.ab-red { background:var(--rlt); color:var(--red); }
+.ab-amb { background:var(--alt); color:var(--amb); }
+.ab-grn { background:var(--glt); color:var(--grn); }
+
+/* ── FILTER BAR ──────────────────────────────────────── */
+.filter-bar {
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:var(--r); padding:12px 16px;
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin-bottom:14px; box-shadow:var(--sh);
+}
+.fsel {
+  padding:5px 10px; border:1px solid var(--bdr);
+  border-radius:var(--r); font-family:inherit; font-size:12px;
+  color:var(--ink); background:#fff; cursor:pointer;
+}
+.fsel:focus { outline:none; border-color:var(--blue); }
+.flab { font-size:11px; font-weight:600; color:var(--ink3);
+  text-transform:uppercase; letter-spacing:.5px; }
+.fsep { width:1px; height:20px; background:var(--bdr); }
+
+/* ── COMPLIANCE GRID ─────────────────────────────────── */
+.grid-wrap {
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:var(--r); box-shadow:var(--sh);
+  overflow:auto; max-height:calc(100vh - 220px);
+}
+table.cgrid {
+  width:100%; border-collapse:collapse;
+  font-size:12px;
+}
+table.cgrid thead th {
+  position:sticky; top:0; z-index:10;
+  background:var(--navy); color:#fff;
+  padding:0; font-weight:600; white-space:nowrap;
+  border-right:1px solid rgba(255,255,255,.12);
+}
+table.cgrid thead th .th-inner {
+  padding:10px 12px; display:flex; flex-direction:column;
+  align-items:center; gap:2px;
+}
+table.cgrid thead th.th-company {
+  text-align:left; min-width:220px; position:sticky;
+  left:0; z-index:20;
+}
+table.cgrid thead th.th-company .th-inner {
+  align-items:flex-start;
+}
+table.cgrid thead th .th-form { font-size:11px; font-weight:700; }
+table.cgrid thead th .th-due  { font-size:9px; opacity:.6; font-weight:400; }
+
+table.cgrid tbody tr {
+  border-bottom:1px solid var(--bdr);
+  transition:background .1s;
+}
+table.cgrid tbody tr:hover { background:var(--surf2); }
+table.cgrid tbody tr:hover .td-company { background:var(--surf2); }
+
+.td-company {
+  position:sticky; left:0; z-index:5;
+  background:var(--surf); padding:10px 14px;
+  border-right:2px solid var(--bdr); min-width:220px;
+}
+.co-name { font-weight:600; color:var(--ink); font-size:12px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  max-width:200px; }
+.co-meta { font-size:10px; color:var(--ink3); margin-top:2px; }
+
+.td-form {
+  padding:6px 8px; text-align:center; cursor:pointer;
+  border-right:1px solid var(--bdr); min-width:68px;
+  transition:background .1s;
+}
+.td-form:hover { background:var(--blue2); }
+
+/* Status chips */
+.sc {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:32px; height:32px; border-radius:var(--r);
+  font-size:15px; cursor:pointer; transition:.15s;
+  border:1.5px solid transparent;
+}
+.sc:hover { transform:scale(1.1); }
+.sc-filed   { background:var(--glt); color:var(--grn); border-color:#a7f3d0; }
+.sc-pending { background:var(--alt); color:var(--amb); border-color:#fcd34d; }
+.sc-overdue { background:var(--rlt); color:var(--red); border-color:#fca5a5; }
+.sc-na      { background:var(--glc); color:var(--gry); border-color:var(--bdr); }
+.sc-blank   { background:var(--surf2); color:var(--ink3); border-color:var(--bdr); }
+
+/* Detail line under status icon */
+.sc-detail {
+  font-size:9px; color:var(--ink3);
+  margin-top:2px; max-width:64px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  text-align:center;
+}
+
+/* ── TIME SUMMARY ────────────────────────────────────── */
+.time-table {
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:var(--r); box-shadow:var(--sh); overflow:hidden;
+}
+.time-table table { width:100%; border-collapse:collapse; }
+.time-table th {
+  background:var(--surf2); padding:10px 16px; font-size:10px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--ink2); text-align:left; border-bottom:1px solid var(--bdr);
+}
+.time-table td {
+  padding:11px 16px; font-size:12px; border-bottom:1px solid var(--bdr);
+}
+.time-table tr:last-child td { border-bottom:none; }
+.mono { font-family:'IBM Plex Mono',monospace; font-weight:500; }
+
+/* ── MODAL ───────────────────────────────────────────── */
+.mbk {
+  position:fixed; inset:0; background:rgba(0,0,0,.45);
+  z-index:500; display:none; align-items:center; justify-content:center;
+  backdrop-filter:blur(2px);
+}
+.mbk.on { display:flex; }
+.modal {
+  background:var(--surf); border-radius:10px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  width:420px; max-width:94vw; max-height:90vh; overflow-y:auto;
+}
+.mh {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--bdr);
+  position:sticky; top:0; background:var(--surf); z-index:1;
+}
+.mt { font-size:14px; font-weight:700; color:var(--ink); }
+.mx {
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink3); font-size:16px;
+  transition:background .15s;
+}
+.mx:hover { background:var(--surf2); }
+.mbody { padding:18px 20px; }
+.mrow { margin-bottom:14px; }
+.mlab {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.5px; color:var(--ink3); margin-bottom:5px;
+}
+.mfi {
+  width:100%; padding:9px 12px; border:1px solid var(--bdr);
+  border-radius:var(--r); font-family:inherit; font-size:13px;
+  color:var(--ink); background:#fff; transition:border .15s;
+}
+.mfi:focus { outline:none; border-color:var(--blue); }
+.mfi-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mfooter {
+  display:flex; gap:10px; justify-content:flex-end;
+  padding:14px 20px; border-top:1px solid var(--bdr);
+}
+.btn {
+  padding:8px 18px; border-radius:var(--r); font-family:inherit;
+  font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--bdr);
+  transition:opacity .15s;
+}
+.btn:hover { opacity:.85; }
+.btn-pri { background:var(--navy); color:#fff; border-color:var(--navy); }
+.btn-sec { background:#fff; color:var(--ink2); }
+.btn-sm  { padding:5px 12px; font-size:11px; }
+
+/* Status selector in modal */
+.status-opts { display:flex; gap:8px; flex-wrap:wrap; }
+.sopt {
+  padding:7px 14px; border-radius:var(--r); font-size:12px;
+  font-weight:600; cursor:pointer; border:1.5px solid var(--bdr);
+  transition:.15s; background:var(--surf2);
+}
+.sopt:hover { opacity:.8; }
+.sopt.sel-filed   { background:var(--glt); color:var(--grn); border-color:var(--grn); }
+.sopt.sel-pending { background:var(--alt); color:var(--amb); border-color:var(--amb); }
+.sopt.sel-na      { background:var(--glc); color:var(--gry); border-color:var(--gry); }
+.sopt.sel-blank   { background:var(--surf); color:var(--ink3); border-color:var(--bdr); }
+
+/* ── NEW YEAR MODAL ──────────────────────────────────── */
+.fy-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:20px; font-size:11px;
+  font-weight:600; background:var(--blue2); color:var(--blue);
+}
+
+/* ── TOAST ───────────────────────────────────────────── */
+#toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:var(--ink); color:#fff; padding:10px 20px;
+  border-radius:var(--r); font-size:12px; font-weight:500;
+  z-index:9999; opacity:0; pointer-events:none;
+  transition:opacity .2s; white-space:nowrap;
+}
+#toast.show { opacity:1; }
+#toast.green { background:var(--grn); }
+#toast.red   { background:var(--red); }
+#toast.blue  { background:var(--blue); }
+
+/* ── EMPTY / LOADING ─────────────────────────────────── */
+.empty {
+  text-align:center; padding:60px 20px; color:var(--ink3);
+}
+.empty-ico { font-size:36px; margin-bottom:10px; }
+.spin {
+  width:20px; height:20px; border:2px solid var(--bdr);
+  border-top-color:var(--blue); border-radius:50%;
+  animation:spin .7s linear infinite; display:inline-block;
+  vertical-align:middle; margin-right:8px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── PROGRESS BAR ────────────────────────────────────── */
+.prog-wrap {
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:var(--r); box-shadow:var(--sh);
+  overflow:hidden; margin-bottom:14px;
+}
+.prog-row {
+  display:flex; align-items:center; padding:10px 16px;
+  gap:12px; border-bottom:1px solid var(--bdr);
+  font-size:12px;
+}
+.prog-row:last-child { border-bottom:none; }
+.prog-name { min-width:180px; font-weight:500; overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap; }
+.prog-bar-wrap { flex:1; height:8px; background:var(--surf2);
+  border-radius:4px; overflow:hidden; }
+.prog-bar { height:100%; border-radius:4px; transition:width .3s;
+  background:var(--blue); }
+.prog-pct { min-width:38px; text-align:right; font-family:'IBM Plex Mono',monospace;
+  font-size:11px; color:var(--ink3); }
+.prog-count { min-width:50px; text-align:right; font-size:11px; color:var(--ink3); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">PBGCO</div>
+    <div class="login-title">MCA Compliance Portal</div>
+    <div class="login-sub">FY 2025-26 · Pradip B Gandhi & Co LLP</div>
+    <input class="lfi" id="lId" placeholder="User ID" onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="lfi" id="lPwd" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" id="lBtn" onclick="doLogin()">Sign In →</button>
+    <div class="lerr" id="lErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appWrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">PBGCO</div>
+    <div class="tb-title">MCA Compliance Portal</div>
+    <div class="tb-spacer"></div>
+    <div class="tb-fy">
+      <span style="font-size:11px;color:rgba(255,255,255,.5)">FY</span>
+      <select class="fy-select" id="fySelect" onchange="switchFY(this.value)">
+        <option value="2025-26">2025-26</option>
+      </select>
+      <button class="tb-logout" onclick="addNewFY()" style="border-color:rgba(255,255,255,.15)">+ Year</button>
+    </div>
+    <div class="tb-sync">
+      <div class="sdot" id="sdot"></div>
+      <span id="stxt">Ready</span>
+    </div>
+    <div class="tb-user">
+      <div class="tb-av" id="uAv">A</div>
+      <span id="uNm">User</span>
+    </div>
+    <button class="tb-logout" onclick="doLogout()">Logout</button>
+  </div>
+
+  <!-- TAB NAV -->
+  <div class="tabnav">
+    <button class="tnav on" id="tn-dash" onclick="goTab('dash')">📊 Dashboard</button>
+    <button class="tnav" id="tn-co" onclick="goTab('co')">🏢 Companies (0)</button>
+    <button class="tnav" id="tn-llp" onclick="goTab('llp')">🤝 LLPs (0)</button>
+    <button class="tnav" id="tn-time" onclick="goTab('time')">⏱ Time Summary</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel on" id="p-dash">
+      <div class="dash-stats" id="dashStats">
+        <div class="stat-card">
+          <div class="sl">Total Entities</div>
+          <div class="sv" id="ds-total">—</div>
+          <div class="ss">Companies + LLPs</div>
+        </div>
+        <div class="stat-card">
+          <div class="sl">Forms Filed</div>
+          <div class="sv" id="ds-filed" style="color:var(--grn)">—</div>
+          <div class="ss">This FY</div>
+        </div>
+        <div class="stat-card">
+          <div class="sl">Pending</div>
+          <div class="sv" id="ds-pending" style="color:var(--amb)">—</div>
+          <div class="ss">To be filed</div>
+        </div>
+        <div class="stat-card">
+          <div class="sl">N/A</div>
+          <div class="sv" id="ds-na" style="color:var(--gry)">—</div>
+          <div class="ss">Not applicable</div>
+        </div>
+        <div class="stat-card">
+          <div class="sl">Total Fees Paid</div>
+          <div class="sv" id="ds-fees" style="font-size:18px;color:var(--blue)">—</div>
+          <div class="ss">This FY</div>
+        </div>
+        <div class="stat-card">
+          <div class="sl">Time Spent</div>
+          <div class="sv" id="ds-time" style="font-size:20px;color:var(--sky)">—</div>
+          <div class="ss">All MCA work</div>
+        </div>
+      </div>
+
+      <!-- Company progress -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ink3);margin-bottom:10px">COMPANY PROGRESS</div>
+          <div class="prog-wrap" id="dashCoProg">
+            <div class="empty" style="padding:30px"><span class="spin"></span>Loading…</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ink3);margin-bottom:10px">PENDING BY FORM</div>
+          <div class="prog-wrap" id="dashFormProg">
+            <div class="empty" style="padding:30px"><span class="spin"></span>Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPANIES -->
+    <div class="panel" id="p-co">
+      <div class="filter-bar">
+        <span class="flab">Partner</span>
+        <select class="fsel" id="coPartnerF" onchange="renderGrid('co')">
+          <option value="">All</option>
+          <option>Amit sir</option>
+          <option>Pradip sir</option>
+          <option>Nirmal</option>
+        </select>
+        <div class="fsep"></div>
+        <span class="flab">Status</span>
+        <select class="fsel" id="coStatusF" onchange="renderGrid('co')">
+          <option value="">All</option>
+          <option>Filed</option>
+          <option>Pending</option>
+          <option>N/A</option>
+          <option>Blank</option>
+        </select>
+        <div class="fsep"></div>
+        <input type="text" class="fsel" id="coSearch" placeholder="🔍 Search company…" oninput="renderGrid('co')" style="width:200px">
+        <div style="margin-left:auto;font-size:11px;color:var(--ink3)" id="coCount"></div>
+      </div>
+      <div class="grid-wrap" id="coGrid"><div class="empty" style="padding:30px"><span class="spin"></span> Loading companies…</div>
+        <div class="empty"><span class="spin"></span>Loading…</div>
+      </div>
+    </div>
+
+    <!-- LLPS -->
+    <div class="panel" id="p-llp">
+      <div class="filter-bar">
+        <span class="flab">Partner</span>
+        <select class="fsel" id="llpPartnerF" onchange="renderGrid('llp')">
+          <option value="">All</option>
+          <option>Amit sir</option>
+          <option>Pradip sir</option>
+          <option>Nirmal</option>
+        </select>
+        <div class="fsep"></div>
+        <input type="text" class="fsel" id="llpSearch" placeholder="🔍 Search LLP…" oninput="renderGrid('llp')" style="width:200px">
+        <div style="margin-left:auto;font-size:11px;color:var(--ink3)" id="llpCount"></div>
+      </div>
+      <div class="grid-wrap" id="llpGrid"><div class="empty" style="padding:30px"><span class="spin"></span> Loading LLPs…</div>
+        <div class="empty"><span class="spin"></span>Loading…</div>
+      </div>
+    </div>
+
+    <!-- TIME SUMMARY -->
+    <div class="panel" id="p-time">
+      <div class="filter-bar">
+        <span class="flab">Period</span>
+        <select class="fsel" id="timePeriod" onchange="renderTime()">
+          <option value="all">All Time</option>
+          <option value="month">This Month</option>
+          <option value="quarter">This Quarter</option>
+        </select>
+      </div>
+      <div class="time-table" id="timeTable">
+        <div class="empty" style="padding:40px"><span class="spin"></span>Loading…</div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /appWrap -->
+
+<!-- EDIT FORM MODAL -->
+<div class="mbk" id="editM">
+  <div class="modal">
+    <div class="mh">
+      <div class="mt" id="editMTitle">Update Form</div>
+      <div class="mx" onclick="closeM()">✕</div>
+    </div>
+    <div class="mbody">
+      <input type="hidden" id="eCompany">
+      <input type="hidden" id="eFormId">
+      <input type="hidden" id="eType">
+      <input type="hidden" id="eRowId">
+
+      <div class="mrow">
+        <div class="mlab">Status</div>
+        <div class="status-opts" id="eStatusOpts">
+          <div class="sopt" data-v="Filed"   onclick="selStatus(this)">✅ Filed</div>
+          <div class="sopt" data-v="Pending" onclick="selStatus(this)">⏳ Pending</div>
+          <div class="sopt" data-v="N/A"     onclick="selStatus(this)">— N/A</div>
+          <div class="sopt" data-v=""        onclick="selStatus(this)">⬜ Blank</div>
+        </div>
+      </div>
+
+      <div id="eFiledFields">
+        <div class="mrow">
+          <div class="mlab">Staff Working On It <span style="font-size:10px;color:var(--ink3);font-weight:400">(tap to select multiple)</span></div>
+          <div id="eStaffList" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;
+            border:1px solid var(--bdr);border-radius:var(--r);min-height:40px;background:#fff">
+          </div>
+          <input type="hidden" id="eStaff">
+        </div>
+        <div class="mrow">
+          <div class="mlab">Time Spent</div>
+          <div class="mfi-row">
+            <div>
+              <input class="mfi" type="number" id="eHrs" placeholder="Hours" min="0" max="99">
+              <div style="font-size:10px;color:var(--ink3);margin-top:3px;text-align:center">Hours</div>
+            </div>
+            <div>
+              <input class="mfi" type="number" id="eMins" placeholder="Mins" min="0" max="59">
+              <div style="font-size:10px;color:var(--ink3);margin-top:3px;text-align:center">Minutes</div>
+            </div>
+          </div>
+        </div>
+        <div class="mrow" id="eFiledOnRow">
+          <div class="mlab">Date of Filing</div>
+          <input class="mfi" type="date" id="eDate">
+        </div>
+        <div class="mrow" id="eSrnRow">
+          <div class="mlab">SRN Number</div>
+          <input class="mfi" id="eSrn" placeholder="e.g. S12345678">
+        </div>
+        <div class="mrow" id="eFeesRow">
+          <div class="mlab">Actual Fees Paid (₹)</div>
+          <input class="mfi" type="number" id="eFees" placeholder="0">
+        </div>
+      </div>
+
+      <div class="mrow">
+        <div class="mlab">Notes</div>
+        <input class="mfi" id="eNotes" placeholder="Any remarks…">
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-sec" onclick="closeM()">Cancel</button>
+      <button class="btn btn-pri" id="eSaveBtn" onclick="saveForm()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══ CONFIG ════════════════════════════════════════════
+const GS_URL = 'https://script.google.com/macros/s/AKfycbxTYD_owSv_tM8NaXZPVLwSCexxIFYxtu_Xdwl8sO7uUv-Fb1ZccmXe5oCkE69NwnDCUg/exec';
+const CURRENT_FY = '2025-26';
+
+// Forms definition
+const CO_FORMS = [
+  {id:'ADT-1',   name:'ADT-1',          due:'15d AGM'},
+  {id:'MGT-7',   name:'MGT-7/7A',       due:'60d AGM'},
+  {id:'AOC-4',   name:'AOC-4',          due:'30d AGM'},
+  {id:'MGT-14',  name:'MGT-14',         due:'30d BM'},
+  {id:'BEN-2',   name:'BEN-2',          due:'Event'},
+  {id:'MSME-1A', name:'MSME-1 H1',      due:'30 Oct'},
+  {id:'MSME-1B', name:'MSME-1 H2',      due:'30 Apr'},
+  {id:'DPT-3',   name:'DPT-3',          due:'30 Jun'},
+  {id:'PAS-6',   name:'PAS-6',          due:'60d HY'},
+  {id:'AGM',     name:'AGM',            due:'6m FY'},
+  {id:'MINUTES', name:'Minutes',        due:'—'},
+];
+const LLP_FORMS = [
+  {id:'FORM-8',  name:'Form 8',         due:'30 Oct'},
+  {id:'FORM-11', name:'Form 11',        due:'30 May'},
+];
+
+// ══ STATE ═════════════════════════════════════════════
+let CU = null;
+let COMPANIES = [];   // from Clients sheet — Type = Pvt Ltd / Public / Section 8
+let LLPS = [];        // from Clients sheet — Type = LLP
+let MCA_DATA = {};    // key: "CompanyName|FormId|FY" → {status,staff,time,date,srn,fees,notes,rowId}
+let USERS = [];
+let activeFY = CURRENT_FY;
+let _saving = false;
+
+// ══ API ═══════════════════════════════════════════════
+const sdot = ()=>document.getElementById('sdot');
+const stxt = ()=>document.getElementById('stxt');
+
+async function api(params){
+  sdot().className='sdot busy'; stxt().textContent='Syncing…';
+  const qs=Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(String(v??''))).join('&');
+  try{
+    const r=await fetch(GS_URL+'?'+qs);
+    const j=await r.json();
+    sdot().className='sdot ok'; stxt().textContent='Synced ✓';
+    return j.data;
+  }catch(e){
+    sdot().className='sdot err'; stxt().textContent='Error';
+    return null;
+  }
+}
+
+// ══ AUTH ══════════════════════════════════════════════
+async function doLogin(){
+  const uid=document.getElementById('lId').value.trim();
+  const pwd=document.getElementById('lPwd').value;
+  const btn=document.getElementById('lBtn');
+  const err=document.getElementById('lErr');
+  if(!uid||!pwd){err.textContent='Enter User ID and password.';return;}
+  btn.disabled=true; btn.textContent='Signing in…';
+  const res=await api({action:'auth',uid,pwd});
+  if(res&&res.ok===true){
+    CU={name:res.name,role:String(res.role||'staff').toLowerCase()};
+    document.getElementById('uNm').textContent=CU.name;
+    const av=document.getElementById('uAv');
+    av.textContent=CU.name.charAt(0).toUpperCase();
+    av.style.background=strColor(CU.name);
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('appWrap').classList.add('show');
+    await loadAll();
+  } else {
+    err.textContent='Incorrect User ID or password.';
+    btn.disabled=false; btn.textContent='Sign In →';
+  }
+}
+
+function doLogout(){
+  CU=null; COMPANIES=[]; LLPS=[]; MCA_DATA={}; USERS=[];
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('appWrap').classList.remove('show');
+  document.getElementById('lId').value='';
+  document.getElementById('lPwd').value='';
+  document.getElementById('lErr').textContent='';
+  document.getElementById('lBtn').disabled=false;
+  document.getElementById('lBtn').textContent='Sign In →';
+}
+
+// ══ LOAD ALL DATA ═════════════════════════════════════
+async function loadAll(){
+  // Load in parallel
+  const [clients, mcaRows, usersRows] = await Promise.all([
+    api({action:'read',sheet:'Clients'}),
+    api({action:'read',sheet:'MCA_2025-26'}),
+    api({action:'read',sheet:'Users'}),
+  ]);
+
+  // Parse clients
+  if(clients&&clients.length>1){
+    const rows=clients.slice(1).filter(r=>r[0]&&r[1]);
+    COMPANIES = rows.filter(r=>['Pvt Ltd','Public','Section 8'].includes(String(r[4]||'').trim()))
+      .map(r=>({id:String(r[0]),name:String(r[1]).trim(),cin:String(r[2]||''),
+        type:String(r[4]||'Pvt Ltd'), partner:guessPartner(String(r[1]))}));
+    LLPS = rows.filter(r=>String(r[4]||'').trim()==='LLP')
+      .map(r=>({id:String(r[0]),name:String(r[1]).trim(),cin:String(r[2]||''),
+        type:'LLP', partner:guessPartner(String(r[1]))}));
+  }
+
+  // Parse users
+  if(usersRows&&usersRows.length>1){
+    USERS=usersRows.slice(1).filter(r=>r[0]&&r[2]).map(r=>String(r[2]).trim());
+  }
+
+  // Populate staff dropdown
+  // Build staff checkboxes
+  _staffList = USERS.map(u=>u);
+  buildStaffCheckboxes([]);
+
+  // Parse MCA data
+  MCA_DATA={};
+  if(mcaRows&&mcaRows.length>1){
+    mcaRows.slice(1).filter(r=>r[0]).forEach((r,i)=>{
+      const key=`${String(r[1]||'')}|${String(r[6]||'')}|${String(r[5]||'')}`;
+      MCA_DATA[key]={
+        rowId:String(r[0]), gsRow:i+2,
+        company:String(r[1]||''), cin:String(r[2]||''), type:String(r[3]||''),
+        partner:String(r[4]||''), fy:String(r[5]||''), formId:String(r[6]||''),
+        status:String(r[7]||''), staff:String(r[8]||''),
+        time:parseFloat(r[9]||0)||0,
+        date:String(r[10]||''), srn:String(r[11]||''),
+        fees:parseFloat(r[12]||0)||0, notes:String(r[13]||''),
+        updatedBy:String(r[14]||''), updatedOn:String(r[15]||'')
+      };
+    });
+  }
+
+  // Update tab counts
+  document.getElementById('tn-co').textContent=`🏢 Companies (${COMPANIES.length})`;
+  document.getElementById('tn-llp').textContent=`🤝 LLPs (${LLPS.length})`;
+
+  console.log('MCA loaded: COMPANIES='+COMPANIES.length+', LLPS='+LLPS.length);
+
+  // Small delay to ensure DOM is ready
+  setTimeout(()=>{
+    renderDash();
+    renderGrid('co');
+    renderGrid('llp');
+    renderTime();
+  }, 100);
+}
+
+// ══ PARTNER DETECTION ════════════════════════════════
+// Map from existing ROC data — best effort from company names
+function guessPartner(name){ return ''; }
+
+let _staffList = [];
+
+function buildStaffCheckboxes(selected){
+  const container = document.getElementById('eStaffList');
+  if(!container||!_staffList.length) return;
+  const sel = Array.isArray(selected)
+    ? selected
+    : String(selected||'').split(',').map(s=>s.trim()).filter(Boolean);
+  container.innerHTML = _staffList.map(u=>{
+    const checked = sel.includes(u);
+    return `<label style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+      border:1.5px solid ${checked?'#1a56db':'#e2e5ea'};border-radius:20px;cursor:pointer;
+      font-size:12px;font-weight:${checked?'600':'400'};
+      background:${checked?'#e8f0fe':'#fff'};
+      color:${checked?'#1a56db':'#4a5568'};transition:.15s">
+      <input type="checkbox" value="${u}" ${checked?'checked':''}
+        onchange="updateStaffHidden()" style="accent-color:#1a56db;cursor:pointer">
+      ${u}</label>`;
+  }).join('');
+  updateStaffHidden();
+}
+
+function updateStaffHidden(){
+  const checked=[...document.querySelectorAll('#eStaffList input[type=checkbox]:checked')].map(c=>c.value);
+  const h=document.getElementById('eStaff');
+  if(h) h.value=checked.join(', ');
+  document.querySelectorAll('#eStaffList label').forEach(lbl=>{
+    const cb=lbl.querySelector('input');
+    lbl.style.borderColor=cb.checked?'#1a56db':'#e2e5ea';
+    lbl.style.background=cb.checked?'#e8f0fe':'#fff';
+    lbl.style.color=cb.checked?'#1a56db':'#4a5568';
+    lbl.style.fontWeight=cb.checked?'600':'400';
+  });
+}
+
+// ══ DATA ACCESS HELPERS ══════════════════════════════
+function getCell(company, formId){
+  const key=`${company}|${formId}|${activeFY}`;
+  return MCA_DATA[key]||null;
+}
+
+function fmtTime(decHrs){
+  if(!decHrs||decHrs<=0) return '—';
+  const total=Math.round(decHrs*60);
+  const h=Math.floor(total/60), m=total%60;
+  if(h===0) return m+'m';
+  if(m===0) return h+'h';
+  return h+'h '+m+'m';
+}
+
+// ══ STATUS DISPLAY ════════════════════════════════════
+function statusIcon(status){
+  if(!status||status==='') return {cls:'sc-blank', icon:'·', label:''};
+  if(status==='Filed')   return {cls:'sc-filed',   icon:'✓', label:''};
+  if(status==='Pending') return {cls:'sc-pending', icon:'⏳', label:''};
+  if(status==='N/A')     return {cls:'sc-na',      icon:'—', label:''};
+  return {cls:'sc-blank', icon:'·', label:''};
+}
+
+// ══ DASHBOARD ════════════════════════════════════════
+function renderDash(){
+  const all=[...COMPANIES,...LLPS];
+  const coForms=CO_FORMS; const llpForms=LLP_FORMS;
+
+  let filed=0, pending=0, na=0, fees=0, totalTime=0, totalForms=0;
+
+  COMPANIES.forEach(c=>{
+    coForms.forEach(f=>{
+      totalForms++;
+      const cell=getCell(c.name,f.id);
+      if(cell){
+        if(cell.status==='Filed'){filed++;fees+=cell.fees||0;totalTime+=cell.time||0;}
+        else if(cell.status==='Pending') pending++;
+        else if(cell.status==='N/A') na++;
+      }
+    });
+  });
+  LLPS.forEach(l=>{
+    llpForms.forEach(f=>{
+      totalForms++;
+      const cell=getCell(l.name,f.id);
+      if(cell){
+        if(cell.status==='Filed'){filed++;fees+=cell.fees||0;totalTime+=cell.time||0;}
+        else if(cell.status==='Pending') pending++;
+        else if(cell.status==='N/A') na++;
+      }
+    });
+  });
+
+  document.getElementById('ds-total').textContent=all.length;
+  document.getElementById('ds-filed').textContent=filed;
+  document.getElementById('ds-pending').textContent=pending;
+  document.getElementById('ds-na').textContent=na;
+  document.getElementById('ds-fees').textContent=fees?'₹'+fees.toLocaleString('en-IN'):'₹0';
+  document.getElementById('ds-time').textContent=fmtTime(totalTime);
+
+  // Company progress bars
+  const coProg=document.getElementById('dashCoProg');
+  const coRows=COMPANIES.slice(0,15).map(c=>{
+    const total=CO_FORMS.length;
+    let done=0;
+    CO_FORMS.forEach(f=>{
+      const cell=getCell(c.name,f.id);
+      if(cell&&(cell.status==='Filed'||cell.status==='N/A')) done++;
+    });
+    const pct=Math.round(done/total*100);
+    return `<div class="prog-row">
+      <div class="prog-name" title="${c.name}">${c.name.substring(0,28)}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%;background:${pct===100?'var(--grn)':'var(--blue)'}"></div></div>
+      <div class="prog-pct">${pct}%</div>
+      <div class="prog-count">${done}/${total}</div>
+    </div>`;
+  }).join('');
+  coProg.innerHTML=coRows||'<div class="empty" style="padding:20px">No data</div>';
+
+  // Form pending bars
+  const formProg=document.getElementById('dashFormProg');
+  const formRows=CO_FORMS.map(f=>{
+    let pend=0;
+    COMPANIES.forEach(c=>{
+      const cell=getCell(c.name,f.id);
+      if(!cell||cell.status==='Pending'||cell.status==='') pend++;
+    });
+    const pct=Math.round(pend/Math.max(1,COMPANIES.length)*100);
+    return {name:f.name, pend, pct};
+  }).sort((a,b)=>b.pend-a.pend).slice(0,8).map(({name,pend,pct})=>
+    `<div class="prog-row">
+      <div class="prog-name">${name}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${pct}%;background:${pct>60?'var(--red)':pct>30?'var(--amb)':'var(--grn)'}"></div></div>
+      <div class="prog-pct">${pct}%</div>
+      <div class="prog-count">${pend} pending</div>
+    </div>`
+  ).join('');
+  formProg.innerHTML=formRows||'<div class="empty" style="padding:20px">All clear</div>';
+}
+
+// ══ COMPLIANCE GRID ═══════════════════════════════════
+function renderGrid(type){
+  const isLLP = type==='llp';
+  const forms = isLLP ? LLP_FORMS : CO_FORMS;
+  const entities = isLLP ? LLPS : COMPANIES;
+
+  // Filters
+  const partnerF = document.getElementById(type+'PartnerF')?.value||'';
+  const statusF  = document.getElementById(type+'StatusF')?.value||'';
+  const searchF  = document.getElementById(type+'Search')?.value.toLowerCase()||'';
+
+  let filtered = entities.filter(e=>{
+    if(searchF && !e.name.toLowerCase().includes(searchF)) return false;
+    if(partnerF){
+      // Check if any form has this partner
+      const hasPartner=forms.some(f=>{
+        const cell=getCell(e.name,f.id);
+        return cell&&cell.partner===partnerF;
+      });
+      if(!hasPartner && e.partner!==partnerF) return false;
+    }
+    if(statusF){
+      const hasStatus=forms.some(f=>{
+        const cell=getCell(e.name,f.id);
+        const st=cell?cell.status:'';
+        if(statusF==='Blank') return !st||st==='';
+        return st===statusF;
+      });
+      if(!hasStatus) return false;
+    }
+    return true;
+  });
+
+  document.getElementById(type+'Count').textContent=`${filtered.length} of ${entities.length}`;
+
+  const el=document.getElementById(type+'Grid');
+  if(!filtered.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><p>No entries match filter</p></div>';
+    return;
+  }
+
+  // Build table
+  let html=`<table class="cgrid">
+  <thead><tr>
+    <th class="th-company"><div class="th-inner"><span>Company / LLP</span></div></th>`;
+
+  forms.forEach(f=>{
+    html+=`<th><div class="th-inner"><span class="th-form">${f.name}</span><span class="th-due">${f.due}</span></div></th>`;
+  });
+  html+=`</tr></thead><tbody>`;
+
+  filtered.forEach(e=>{
+    html+=`<tr>
+      <td class="td-company">
+        <div class="co-name" title="${e.name}">${e.name}</div>
+        <div class="co-meta">${e.type}${e.cin?' · '+e.cin.substring(0,12):''}${e.partner?' · '+e.partner:''}</div>
+      </td>`;
+
+    forms.forEach(f=>{
+      const cell=getCell(e.name,f.id);
+      const st=cell?cell.status:'';
+      const {cls,icon}=statusIcon(st);
+      const staffVal=cell?cell.staff||'':'';
+      const staffDisplay=staffVal?(staffVal.includes(',')?staffVal.split(',')[0].trim()+'…':staffVal.split(' ')[0]):'';
+      const detail=staffDisplay||(cell&&cell.date?cell.date.substring(5):'');
+      html+=`<td class="td-form" onclick="openEdit('${escQ(e.name)}','${f.id}','${type}')">
+        <div class="sc ${cls}">${icon}</div>
+        ${detail?`<div class="sc-detail">${detail}</div>`:''}
+      </td>`;
+    });
+    html+=`</tr>`;
+  });
+
+  html+=`</tbody></table>`;
+  el.innerHTML=html;
+}
+
+function escQ(s){ return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+// ══ EDIT MODAL ════════════════════════════════════════
+let _editState={};
+
+function openEdit(company, formId, entityType){
+  const forms = entityType==='llp' ? LLP_FORMS : CO_FORMS;
+  const form = forms.find(f=>f.id===formId);
+  if(!form) return;
+
+  const cell=getCell(company,formId)||{};
+  _editState={company, formId, entityType, cell};
+
+  document.getElementById('editMTitle').textContent=`${company.substring(0,30)} — ${form.name}`;
+  document.getElementById('eCompany').value=company;
+  document.getElementById('eFormId').value=formId;
+  document.getElementById('eType').value=entityType;
+  document.getElementById('eRowId').value=cell.rowId||'';
+
+  // Set status
+  const st=cell.status||'';
+  document.querySelectorAll('.sopt').forEach(o=>{
+    o.className='sopt';
+    if(o.dataset.v===st){
+      if(st==='Filed') o.classList.add('sel-filed');
+      else if(st==='Pending') o.classList.add('sel-pending');
+      else if(st==='N/A') o.classList.add('sel-na');
+      else o.classList.add('sel-blank');
+    }
+  });
+
+  // Populate fields
+  const totalMins=Math.round((cell.time||0)*60);
+  document.getElementById('eHrs').value=Math.floor(totalMins/60)||'';
+  document.getElementById('eMins').value=totalMins%60||'';
+  // Populate staff checkboxes with existing selection
+  buildStaffCheckboxes(cell.staff||'');
+  document.getElementById('eDate').value=cell.date||'';
+  document.getElementById('eSrn').value=cell.srn||'';
+  document.getElementById('eFees').value=cell.fees||'';
+  document.getElementById('eNotes').value=cell.notes||'';
+
+  toggleFiledFields(st); // always shows fields
+  document.getElementById('editM').classList.add('on');
+}
+
+function selStatus(el){
+  // Toggle: clicking the already-selected status clears it (allows undo)
+  const wasSelected = el.className.includes('sel-filed') ||
+    el.className.includes('sel-pending') || el.className.includes('sel-na') ||
+    el.className.includes('sel-blank');
+  document.querySelectorAll('.sopt').forEach(o=>o.className='sopt');
+  if(!wasSelected){
+    const v=el.dataset.v;
+    if(v==='Filed')         el.classList.add('sel-filed');
+    else if(v==='Pending')  el.classList.add('sel-pending');
+    else if(v==='N/A')      el.classList.add('sel-na');
+    else                    el.classList.add('sel-blank');
+  }
+  // if wasSelected and same button clicked = cleared back to blank (undo)
+  document.getElementById('eFiledFields').style.display='';
+}
+
+function toggleFiledFields(status){
+  // Always show all fields — staff/time/SRN relevant for all statuses
+  document.getElementById('eFiledFields').style.display='';
+}
+
+function closeM(){
+  document.getElementById('editM').classList.remove('on');
+  _saving=false;
+}
+
+async function saveForm(){
+  if(_saving) return;
+  _saving=true;
+  const btn=document.getElementById('eSaveBtn');
+  btn.disabled=true; btn.textContent='Saving…';
+
+  const company=document.getElementById('eCompany').value;
+  const formId=document.getElementById('eFormId').value;
+  const entityType=document.getElementById('eType').value;
+  const rowId=document.getElementById('eRowId').value;
+
+  const stEl=document.querySelector('.sopt[class*="sel-"]');
+  const status=stEl?stEl.dataset.v:'';
+
+  const h=parseInt(document.getElementById('eHrs').value)||0;
+  const m=parseInt(document.getElementById('eMins').value)||0;
+  const timeSpent=Math.round((h+m/60)*100)/100;
+
+  const entity=[...COMPANIES,...LLPS].find(e=>e.name===company)||{};
+
+  const now=new Date();
+  const rowData=[
+    rowId||('MCA'+Date.now()),
+    company,
+    entity.cin||'',
+    entity.type||'',
+    document.getElementById('eStaff').value||'',  // using staff field as partner proxy
+    activeFY,
+    formId,
+    status,
+    document.getElementById('eStaff').value,
+    timeSpent,
+    document.getElementById('eDate').value,
+    document.getElementById('eSrn').value,
+    parseFloat(document.getElementById('eFees').value)||0,
+    document.getElementById('eNotes').value,
+    CU.name,
+    now.toISOString().split('T')[0]
+  ];
+
+  // Fix: move partner to col 5 properly
+  rowData[4]=entity.partner||'';
+  rowData[8]=document.getElementById('eStaff').value;
+
+  // Update local state immediately
+  const key=`${company}|${formId}|${activeFY}`;
+  const gsRow = MCA_DATA[key]?.gsRow || null;
+  MCA_DATA[key]={
+    rowId:rowData[0], gsRow, company, cin:entity.cin||'',
+    type:entity.type||'', partner:entity.partner||'', fy:activeFY, formId,
+    status, staff:rowData[8], time:timeSpent,
+    date:rowData[10], srn:rowData[11], fees:rowData[12],
+    notes:rowData[13], updatedBy:CU.name, updatedOn:rowData[15]
+  };
+
+  closeM();
+  renderGrid(entityType);
+  renderDash();
+  renderTime();
+  toast('Saved — '+company.substring(0,25)+' · '+formId,'green');
+
+  // Sync to sheet
+  if(gsRow){
+    await api({action:'updateCols',sheet:'MCA_2025-26',row:gsRow,
+      vals:JSON.stringify({7:status,8:entity.partner||'',9:rowData[8],10:timeSpent,
+        11:rowData[10],12:rowData[11],13:rowData[12],14:rowData[13],
+        15:CU.name,16:rowData[15]})});
+  } else {
+    await api({action:'append',sheet:'MCA_2025-26',row:JSON.stringify(rowData)});
+    // Reload to get actual gsRow
+    const fresh=await api({action:'read',sheet:'MCA_2025-26'});
+    if(fresh&&fresh.length>1){
+      fresh.slice(1).filter(r=>r[0]).forEach((r,i)=>{
+        const k=`${String(r[1]||'')}|${String(r[6]||'')}|${String(r[5]||'')}`;
+        if(MCA_DATA[k]) MCA_DATA[k].gsRow=i+2;
+      });
+    }
+  }
+  _saving=false;
+}
+
+// ══ TIME SUMMARY ═════════════════════════════════════
+function renderTime(){
+  const period=document.getElementById('timePeriod')?.value||'all';
+  const now=new Date();
+  let from=null;
+  if(period==='month') from=new Date(now.getFullYear(),now.getMonth(),1);
+  if(period==='quarter'){const q=Math.floor(now.getMonth()/3);from=new Date(now.getFullYear(),q*3,1);}
+
+  // Aggregate by staff
+  const byStaff={};
+  Object.values(MCA_DATA).forEach(cell=>{
+    if(cell.fy!==activeFY) return;
+    if(from&&cell.updatedOn){
+      const d=new Date(cell.updatedOn);
+      if(d<from) return;
+    }
+    if(!cell.staff) return;
+    if(!byStaff[cell.staff]) byStaff[cell.staff]={forms:0,companies:new Set(),time:0,fees:0};
+    byStaff[cell.staff].forms++;
+    byStaff[cell.staff].companies.add(cell.company);
+    byStaff[cell.staff].time+=cell.time||0;
+    byStaff[cell.staff].fees+=cell.fees||0;
+  });
+
+  const rows=Object.entries(byStaff).sort((a,b)=>b[1].time-a[1].time);
+  const totalTime=rows.reduce((s,[,v])=>s+v.time,0);
+  const totalForms=rows.reduce((s,[,v])=>s+v.forms,0);
+
+  const el=document.getElementById('timeTable');
+  if(!rows.length){
+    el.innerHTML='<div class="empty" style="padding:40px"><div class="empty-ico">⏱</div><p>No time data yet</p></div>';
+    return;
+  }
+
+  el.innerHTML=`<table>
+    <thead><tr>
+      <th>Staff Member</th>
+      <th style="text-align:center">Forms Updated</th>
+      <th style="text-align:center">Companies</th>
+      <th style="text-align:right">Time Spent</th>
+      <th style="text-align:right">Fees Processed</th>
+    </tr></thead>
+    <tbody>
+    ${rows.map(([staff,v])=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div style="width:26px;height:26px;border-radius:50%;background:${strColor(staff)};
+          display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">
+          ${staff.charAt(0)}
+        </div>
+        <span style="font-weight:500">${staff}</span>
+      </div></td>
+      <td style="text-align:center"><span class="mono">${v.forms}</span></td>
+      <td style="text-align:center"><span class="mono">${v.companies.size}</span></td>
+      <td style="text-align:right;color:var(--sky)"><span class="mono">${fmtTime(v.time)}</span></td>
+      <td style="text-align:right;color:var(--grn)"><span class="mono">${v.fees?'₹'+v.fees.toLocaleString('en-IN'):'—'}</span></td>
+    </tr>`).join('')}
+    <tr style="background:var(--surf2);font-weight:700;border-top:2px solid var(--bdr)">
+      <td>Total</td>
+      <td style="text-align:center;color:var(--blue)"><span class="mono">${totalForms}</span></td>
+      <td></td>
+      <td style="text-align:right;color:var(--sky)"><span class="mono">${fmtTime(totalTime)}</span></td>
+      <td></td>
+    </tr>
+    </tbody>
+  </table>`;
+}
+
+// ══ TAB NAVIGATION ════════════════════════════════════
+function goTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tnav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  document.getElementById('tn-'+id).classList.add('on');
+}
+
+// ══ FY MANAGEMENT ════════════════════════════════════
+function switchFY(fy){
+  activeFY=fy;
+  renderGrid('co'); renderGrid('llp'); renderDash(); renderTime();
+}
+
+function addNewFY(){
+  const parts=activeFY.split('-').map(Number);
+  const next=`${parts[0]+1}-${String(parts[1]+1).padStart(2,'0')}`;
+  const sel=document.getElementById('fySelect');
+  if([...sel.options].some(o=>o.value===next)){
+    sel.value=next; switchFY(next); return;
+  }
+  const opt=document.createElement('option');
+  opt.value=next; opt.textContent=next; sel.appendChild(opt);
+  sel.value=next; switchFY(next);
+  toast(`New FY ${next} created — data carries forward automatically`,'blue');
+}
+
+// ══ HELPERS ══════════════════════════════════════════
+const AVC=['#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c',
+           '#3498db','#9b59b6','#e91e63','#00bcd4','#8bc34a',
+           '#ff5722','#607d8b','#795548','#673ab7','#03a9f4'];
+function strColor(s){
+  let h=0; for(let c of String(s||''))h=(h<<5)-h+c.charCodeAt(0);
+  return AVC[Math.abs(h)%AVC.length];
+}
+
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show'+(type?' '+type:'');
+  setTimeout(()=>el.className='',2800);
+}
+</script>
+</body>
+</html>
